@@ -2,9 +2,12 @@
 ui components for wp_csvdata_input
 """
 
+import base64
 import logging
 import os
 import sys
+
+
 if sys:
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
@@ -22,6 +25,7 @@ def no_action(dbref, msg):
 
 
 with wf.uictx("inputctx") as _ctx:
+    @wf.MRVWLR
     def on_submit(dbref, msg):
         #print("csvfile target", _ctx.csvfile.target)
         print("msg == ", msg)
@@ -34,10 +38,11 @@ with wf.uictx("inputctx") as _ctx:
             rts.addTask(wf.ReactTag_Backend.CHECK_OP_STATUS, None)
             return msg.page, rts
 
-        csvfile = _ctx.csvfile.getValue()
-        print("here csvfile= ", csvfile)
-        if csvfile.strip() != '':
-            csvcontent = None
+        selected_file_info = msg.form_data[1]
+        if selected_file_info.value.strip() != '':
+            csvfile = selected_file_info.files[0].name
+            csvcontent = base64.b64decode(
+                selected_file_info.files[0].file_content)
 
             # _ctx.form.target.files[0].name
             # _ctx.form.target.files[0].file_content
@@ -45,7 +50,7 @@ with wf.uictx("inputctx") as _ctx:
             rts.addTask(wf.ReactTag_ModelUpdate.GEN_CSV_METADATAREPORT, Dict(
                 {'file_name': csvfile, 'file_content': csvcontent}))
             rts.addTask(wf.ReactTag_Backend.CHECK_OP_STATUS, None)
-
+            print("pass batton to MVULR")
             return msg.page, rts
 
         pass

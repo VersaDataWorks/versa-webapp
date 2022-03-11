@@ -12,7 +12,8 @@ _hcs = Dict()
 refBoard = Dict()
 _currTracker = _hcs
 _currSpath = "/"
-session_dict = {}
+session_dict = Dict()
+session_dict.model = Dict(track_changes=True)
 
 
 # def build_hcdbref():
