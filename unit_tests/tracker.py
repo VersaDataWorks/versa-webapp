@@ -4,12 +4,12 @@ import jsbeautifier
 import logging
 import json
 
-from webapp_framework_extn import dbrefBoard
+from webapp_framework_tracking.dbrefBoard import register as dbrefBoard_register
 
 logger = logging.getLogger(__name__)
 
 _hcs = Dict()
-refBoard = Dict()
+refBoard = Dict(track_changes=True)
 _currTracker = _hcs
 _currSpath = "/"
 session_dict = Dict()
@@ -94,7 +94,7 @@ def hcGen_register(func):
         #print("register ", func, " ", hcref.stub, " ", hcref.key)
         # TODO: pick it up: its a mystry why func !=
         #dbrefBoard.register(refBoard, func, hcref)
-        dbrefBoard.register(refBoard, hcref.stub, hcref)
+        dbrefBoard_register(refBoard, hcref.stub, hcref)
         return hcref
 
     return hcGen_wrapper

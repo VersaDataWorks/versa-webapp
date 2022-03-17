@@ -49,7 +49,7 @@ def GEN_CSV_METADATAREPORT(model, event_args):
         model.op_status = wf.OpStatus.FAILED
         model.op = "GEN_CSV_METADATAREPORT"
         model.error_report = "Unable to parse as CSV file"
-        logger.debug(f"GEN_CSV_METADATAREPORT: {model.error_report}")
+        logger.debug(f"GEN_CSV_METADATAREPORT: {model.error_report}  {e}")
         return
         #import sys
         #sys.exit("Encountered Errors ")

@@ -13,6 +13,7 @@ import justpy as jp
 import webapp_framework as wf
 
 from tracker import _hcs as stubStore, session_dict, refBoard
+from .components_csv_schema_metadata import build_components
 
 
 def make_wp_react(wp):
@@ -31,7 +32,12 @@ def make_wp_react(wp):
 @jp.SetRoute('/csv_metadata')
 def wp_csv_schema_metadata(request):
     logger.debug("building webpage")
-    wf.Container_(cgens=[wf.Span_("TBD", "TBD")])
+    build_components(session_dict.model)
+    wf.Container_(cgens=[stubStore.csm.titleBanner,
+                         stubStore.csm.stats.section, stubStore.csm.headers, stubStore.csm.samples.section,
+                         stubStore.csm.coltypes.section, stubStore.csm.colnames.section, stubStore.csm.gencsvcfg.section
+
+                         ])
     wp = wf.WebPage_("wp", page_type="quasar", cgens=[stubStore.tlc])()
     wp.model = session_dict.model
     make_wp_react(wp)
