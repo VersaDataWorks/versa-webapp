@@ -9,6 +9,7 @@ from addict import Dict
 import versa_engine as ve
 
 import webapp_framework as wf
+#import dataapis.export as ex
 
 
 def CSV_URL_INPUT(model: Dict, event_args: Dict):
@@ -78,3 +79,47 @@ def GEN_CSV_METADATAREPORT(model, event_args):
     logger.debug(f"analyzed csv : {model.metadata_report}")
     logger.debug(f"analyzed csv : {model.metadata_edits}")
     pass
+
+
+def CSV_METADATA_AS_XML(model, uav):
+    '''
+    uav: ui_action_value
+
+    outcome:
+    self.model.edcfg.schema_xdef: the metadata definition of csv file
+    '''
+    model.edcfg.schema_xdef = ve.csv_utils.build_csv_metadata_v2(
+        uav.csv_datamodel_label,
+        model.metadata_report.delimiter,
+        model.metadata_report.delimiter_name,
+        uav.pks,
+        uav.hasnulls,
+        uav.cols_name,
+        uav.cols_type
+    )
+    logger.debug(f"metadata as xdef {model.edcfg.schema_xdef}")
+    metadata_fn = uav.csv_datamodel_label + ".md"
+
+    model.edcfg.schema_xelem = ve.dataapis.build_file_element(
+        model.csv_file_name,
+        model.metadata_fn,
+        uav.csv_datamodel_label,
+        model.metadata_report.delimiter_name,
+        model.metadata_report.num_header_lines)
+    logger.debug(f"edcfg defination: {model.edcfg.schema_xdef}")
+    model.edcfg.schema_xfn = metadata_fn
+    model.op_status = wf.OpStatus.SUCCESS
+    model.op = "GEN_METADATA_FILE"
+    pass
+
+
+# def write_metadata_file():
+#     """
+#     using report and user input build the metadata file
+#     """
+#     col_types  : list
+#     pk : list
+#     has_nulls: list
+
+#     col_names: list
+#     model_name: str

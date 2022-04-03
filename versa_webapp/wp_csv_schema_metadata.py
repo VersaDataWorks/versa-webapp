@@ -33,12 +33,12 @@ def make_wp_react(wp):
 def wp_csv_schema_metadata(request):
     logger.debug("building webpage")
     build_components(session_dict.model)
-    wf.Container_(cgens=[stubStore.csm.titleBanner,
+    wf.Container_(cgens=[stubStore.csm.titleBannerHalign,
                          stubStore.csm.stats.section, stubStore.csm.headers, stubStore.csm.samples.section,
                          stubStore.csm.coltypes.section, stubStore.csm.colnames.section, stubStore.csm.gencsvcfg.section
 
                          ])
     wp = wf.WebPage_("wp", page_type="quasar", cgens=[stubStore.tlc])()
-    wp.model = session_dict.model
+    wp.model = session_dict.model  # TODO: should happen automatically, i think
     make_wp_react(wp)
     return wp

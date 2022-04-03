@@ -8,7 +8,9 @@ if os:
 
 import sys
 if sys:
-    logging.basicConfig(filename="launcher.log", level=logging.INFO)
+    FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
+    logging.basicConfig(filename="launcher.log",
+                        level=logging.DEBUG, format=FORMAT)
 
 
 from versa_webapp.wp_csvdata_input import wp_csvdata_input
@@ -37,10 +39,20 @@ from versa_webapp.model_backend_actions import CSV_URL_INPUT
 
 # to prepare for csv metadata page
 
+# populate the model with metadata report from url input
 CSV_URL_INPUT(session_dict.model, Dict({'url': 'http://192.168.0.183:9000/airport_to_counties.csv'})
               )
+logger.debug("model = {session_dict.model}")
+wp = wp_csv_schema_metadata(None)
 
-#wp = wp_csv_schema_metadata(None)
+# call the form submit button
+idx = 2
+stubStore.csm.colnames[f"is_pk_{idx}cbox"].target.checked = True
+idx = 0
+stubStore.csm.colnames[f"is_hn_{idx}cbox"].target.checked = True
+msg = Dict()
 
-app = jp.app
-jp.justpy(wp_csv_schema_metadata, start_server=False)
+# start the chain reaction
+stubStore.csm.gencsvcfg.btn.target.dbref_btn.on_click(msg)
+#app = jp.app
+#jp.justpy(wp_csv_schema_metadata, start_server=False)
