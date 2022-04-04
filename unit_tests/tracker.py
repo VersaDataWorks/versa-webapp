@@ -2,7 +2,7 @@ import logging
 import os
 if os:
     logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
 import functools
 import json
 import logging

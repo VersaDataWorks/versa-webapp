@@ -45,7 +45,7 @@ def GEN_CSV_METADATAREPORT(model, event_args):
     cmr = None
     #cmr = cis.get_csv_report(ui_action_value.file_content)
     try:
-        cmr = ve.get_csv_report(event_args.file_content)
+        cmr = ve.csv_utils.get_csv_report(event_args.file_content)
     except Exception as e:
         model.op_status = wf.OpStatus.FAILED
         model.op = "GEN_CSV_METADATAREPORT"
@@ -110,6 +110,7 @@ def CSV_METADATA_AS_XML(model, uav):
     model.edcfg.schema_xfn = metadata_fn
     model.op_status = wf.OpStatus.SUCCESS
     model.op = "GEN_METADATA_FILE"
+
     pass
 
 

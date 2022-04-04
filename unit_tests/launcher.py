@@ -12,7 +12,7 @@ if sys:
     logging.basicConfig(filename="launcher.log",
                         level=logging.DEBUG, format=FORMAT)
 
-
+    logger = logging.getLogger(__name__)
 from versa_webapp.wp_csvdata_input import wp_csvdata_input
 from versa_webapp.wp_csv_schema_metadata import wp_csv_schema_metadata
 
@@ -42,17 +42,17 @@ from versa_webapp.model_backend_actions import CSV_URL_INPUT
 # populate the model with metadata report from url input
 CSV_URL_INPUT(session_dict.model, Dict({'url': 'http://192.168.0.183:9000/airport_to_counties.csv'})
               )
-logger.debug("model = {session_dict.model}")
-wp = wp_csv_schema_metadata(None)
+logger.debug(f"model = {session_dict.model}")
+# wp = wp_csv_schema_metadata(None)
 
-# call the form submit button
-idx = 2
-stubStore.csm.colnames[f"is_pk_{idx}cbox"].target.checked = True
-idx = 0
-stubStore.csm.colnames[f"is_hn_{idx}cbox"].target.checked = True
-msg = Dict()
-
-# start the chain reaction
-stubStore.csm.gencsvcfg.btn.target.dbref_btn.on_click(msg)
-#app = jp.app
-#jp.justpy(wp_csv_schema_metadata, start_server=False)
+# # call the form submit button
+# idx = 2
+# stubStore.csm.colnames[f"is_pk_{idx}cbox"].target.checked = True
+# idx = 0
+# stubStore.csm.colnames[f"is_hn_{idx}cbox"].target.checked = True
+# msg = Dict()
+# msg.page = wp
+# # start the chain reaction
+# stubStore.csm.gencsvcfg.btn.target.dbref_btn.on_click(msg)
+app = jp.app
+jp.justpy(wp_csv_schema_metadata, start_server=False)

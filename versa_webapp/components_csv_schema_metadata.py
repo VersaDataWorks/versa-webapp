@@ -90,7 +90,7 @@ def build_components(model):
             def on_form_submit(dbref, msg):
                 print("calling on form submit")
                 res = Dict()  # collect all the results
-                res.col_types = [_ctx.coltypes[f"selector_{idx}"].target.getValue(
+                res.cols_type = [_ctx.coltypes[f"selector_{idx}"].target.getValue(
                 ) for idx, _ in enumerate(model.metadata_report.cols_type)]
 
                 # TODO: cbox toplevel component is a Label but it doesn't have a getValue function
@@ -115,6 +115,7 @@ def build_components(model):
                 print("hasnul = ", res.hasnulls)
                 print("cols_name = ", res.cols_name)
                 print("model name ", res.csv_datamodel_label)
+                res.freeze()
                 rts = wf.TaskStack()
                 rts.addTask(wf.ReactTag_ModelUpdate.CSV_METADATA_AS_XML, res)
                 rts.addTask(wf.ReactTag_Backend.CHECK_OP_STATUS, None)
