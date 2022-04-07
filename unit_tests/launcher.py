@@ -21,6 +21,7 @@ from addict import Dict
 from tracker import _hcs as stubStore, refBoard, session_dict
 
 from versa_webapp.model_backend_actions import CSV_URL_INPUT
+from versa_webapp.wp_save_csvpack import wp_save_csvpack
 
 #app = jp.app
 #jp.justpy(wp_csvdata_input, start_server=False)
@@ -43,16 +44,21 @@ from versa_webapp.model_backend_actions import CSV_URL_INPUT
 CSV_URL_INPUT(session_dict.model, Dict({'url': 'http://192.168.0.183:9000/airport_to_counties.csv'})
               )
 logger.debug(f"model = {session_dict.model}")
-# wp = wp_csv_schema_metadata(None)
 
-# # call the form submit button
-# idx = 2
-# stubStore.csm.colnames[f"is_pk_{idx}cbox"].target.checked = True
-# idx = 0
-# stubStore.csm.colnames[f"is_hn_{idx}cbox"].target.checked = True
-# msg = Dict()
-# msg.page = wp
-# # start the chain reaction
-# stubStore.csm.gencsvcfg.btn.target.dbref_btn.on_click(msg)
+# call CSV_METADATA_AS_XML the round about way
+wp = wp_csv_schema_metadata(None)
+
+# call the form submit button
+idx = 2
+stubStore.csm.colnames[f"is_pk_{idx}cbox"].target.checked = True
+idx = 0
+stubStore.csm.colnames[f"is_hn_{idx}cbox"].target.checked = True
+msg = Dict()
+msg.page = wp
+# start the chain reaction
+stubStore.csm.gencsvcfg.btn.target.dbref_btn.on_click(msg)
+
+
 app = jp.app
-jp.justpy(wp_csv_schema_metadata, start_server=False)
+jp.justpy(wp_save_csvpack, start_server=False)
+#wp = wp_save_csvpack(None)

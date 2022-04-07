@@ -114,13 +114,53 @@ def CSV_METADATA_AS_XML(model, uav):
     pass
 
 
-# def write_metadata_file():
-#     """
-#     using report and user input build the metadata file
-#     """
-#     col_types  : list
-#     pk : list
-#     has_nulls: list
+def GEN_EDCFG_FILE(model, uav):
+    '''
+    store the csv schema+metadata in xml file
+    TODO: all this can be moved to reactactions
+    outcome:
+    self.model.edcfg.schema_xelem : the file_elem 
+    self.model.edcfg.schema_xfn : the medata fn
+    self.model.edcfg.dpcfg_xelem : the edcfg xelem
+    '''
+    model.edcfg.dpcfg_xfn = uav.savecfgas + ".csvpack"
+    [dpcfg_xelem, xistr] = ve.build_edcfg_elem(
+        [model.edcfg.schema_xelem], model.edcfg.dpcfg_xfn)
 
-#     col_names: list
-#     model_name: str
+    model.edcfg.dpcfg_xelem = dpcfg_xelem
+    model.edcfg.xistr = xistr
+
+# def EDCFG_APPEND(model, uav):
+#     with freeze(uav) as _:
+#         model.edcfg.dpcfg_xfn = uav.target_dpcfg
+#         print("in EDCFG_APPEND", model.edcfg.dpcfg_xfn)
+
+
+def EDCFG_DL_NEW(model, arg=None):
+
+    #print("calling edcfgdl", model.edcfg.schema_xdef)
+    #print("calling edcfgdl", model.edcfg.dpcfg_xelem)
+    model.freeze()
+    # dl.save_page_text(xu.tostring(model.edcfg.dpcfg_xelem),
+    #                  model.edcfg.dpcfg_xfn)
+    # dl.save_page_text(model.edcfg.schema_xdef, model.edcfg.schema_xfn)
+    print("No dl configured to save the csv pack")
+    model.unfreeze()
+
+    pass
+
+
+def EDCFG_DL_APPEND(model, arg=None):
+    # append to datapack: self.model.edcfg.dpcfg_title
+    # the csv_rmd: self.model.edcfg.schema_xelem
+    # self.model.edcfg.schema_xfn
+    model.freeze()
+    # edcfg = xu.read_string(dl.get_page_text(model.edcfg.dpcfg_xfn))
+    # ecu.add_file_elem_to_edcfg(edcfg, model.edcfg.schema_xelem)
+
+    # dl.save_page_text(xu.tostring(edcfg), model.edcfg.dpcfg_xfn)
+    # dl.save_page_text(model.edcfg.schema_xdef, model.edcfg.schema_xfn)
+    print("no dl implemented to append file to")
+    model.unfreeze()
+
+    pass
