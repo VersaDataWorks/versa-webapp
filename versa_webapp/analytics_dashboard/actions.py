@@ -1,8 +1,13 @@
 import logging
 import os
+
+import webapp_framework as wf
+
 if os:
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
+
+import versa_engine as ve
 
 
 def START_DBSESSION(model, arg=None):
@@ -11,18 +16,26 @@ def START_DBSESSION(model, arg=None):
     run_dir = "~/DrivingRange/" + dbsession_id
     run_dir = "/tmp/tmp5gbgkb_2/"
     model.run_dir = run_dir
-    model.connCtx_proxy = frontend_controller.launchdbjob(
-        dbsession_id, run_dir="~/DrivingRange/" + dbsession_id)
+    model.connCtx_proxy = ve.launchdbjob(dbdesc=dbsession_id, run_dir=run_dir)
     model.op = "Start dbsession"
     if model.connCtx_proxy is not None:
         model.noticeboard_message = "successfully launched new database session"
-        model.op_status = OpStatus.SUCCESS
+        model.op_status = wf.OpStatus.SUCCESS
     else:
-        model.op_status = OpStatus.FAILED
+        model.op_status = wf.OpStatus.FAILED
         model.noticeboard_message = " Unable to launch dbsession: this event is logged"
 
+    # be a nice boy..cleanup before you leave
+
+    try:
+        model.connCtx_proxy.conn.root.shutdown_proxyService()
+    except EOFError:
+        # when client closes the server; the client get EOFerror. This is expected. ignore it.
+        pass
     pass
 
+
+wf.make_react(START_DBSESSION, wf.ReactTag_Backend)
 
 # def BUILD_ORM(model, arg=None):
 #     # this should be run under dl context
