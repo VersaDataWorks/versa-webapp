@@ -22,7 +22,7 @@ def make_wp_react(wp):
         logger.debug(f"in react_ui: {tag} {arg}")
         match tag:
             case wf.ReactTag_UI.PageRedirect:
-                wp.redirect = "/csv_metadata"
+                wp.redirect = "/savecfg"
                 pass
     wp.react_ui = react_ui
 

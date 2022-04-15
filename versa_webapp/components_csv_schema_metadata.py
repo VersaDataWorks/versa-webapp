@@ -122,7 +122,7 @@ def build_components(model):
                 return msg.page, rts
 
                 pass
-            wf.InputJBtn_("btn", "Assing a  name", "nameme.cfg", "Generate metadata config",
+            wf.InputJBtn_("btn", "Given a name/label to csv data", "nameme", "Generate metadata config",
                           on_form_submit, on_form_submit)
 
             wf.Subsection_("section", "Build CSV config file", _ictx.btn)

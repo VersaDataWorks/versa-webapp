@@ -37,6 +37,24 @@ def START_DBSESSION(model, arg=None):
 
 wf.make_react(START_DBSESSION, wf.ReactTag_Backend)
 
+
+def CONNECT_DBSESSION(model, arg=None):
+    """
+    connect to existing running dbsession
+    """
+    #run_dir = "/tmp/tmp5gbgkb_2/"
+    #
+    # model.dbsession_id = "t"  # TODO
+
+    model.dbconn, model.dbsession = ve.connect_dbsession(
+        model.session_id, run_dir=model.run_dir)
+    # model.run_dir = run_dir  # TODO
+
+    #logger.info(f"connect dbsession = model.dbsession")
+    pass
+
+
+wf.make_react(CONNECT_DBSESSION, wf.ReactTag_Backend)
 # def BUILD_ORM(model, arg=None):
 #     # this should be run under dl context
 #     cfgxml = dl.get_page_text(arg.name_csvpack)

@@ -1,5 +1,7 @@
 * Setup and running
 python3 -m http.server --bind 192.168.0.183 9000
 
+
+
 * Plan
 - start with vpage_testing_v2.py

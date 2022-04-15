@@ -29,7 +29,7 @@ with wf.uictx("inputctx") as _ctx:
     def on_submit(dbref, msg):
         #print("csvfile target", _ctx.csvfile.target)
         print("msg == ", msg)
-        csvurl = _ctx.csvurl.getValue()
+        csvurl = _ctx.csvurl.target.getValue()
         print("csvurl = ", csvurl)
         rts = wf.TaskStack()
         if csvurl.strip() != 'http://address.of.csv.file/':

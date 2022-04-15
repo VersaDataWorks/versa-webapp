@@ -44,7 +44,8 @@ def make_wp_react(wp):
         logger.debug(f"in react_ui: {tag} {arg}")
         match tag:
             case wf.ReactTag_UI.PageRedirect:
-                wp.redirect = "/csv_metadata"
+                #wp.redirect = "/csv_metadata"
+                print("savecfg wants redirection ...nowhere to go")
                 pass
             # case FrontendReactActionTag.NoticeboardPost:
             #     dbref_banner_noticeboard.showText(model.noticeboard_message)
@@ -57,7 +58,7 @@ def make_wp_react(wp):
     return
 
 
-@ jp.SetRoute('/savecfg')
+@jp.SetRoute('/savecfg')
 def wp_save_csvpack(request):
     wf.Container_(cgens=[stubStore.save_csvpack.titleBanner,
                   stubStore.save_csvpack.deckSection])

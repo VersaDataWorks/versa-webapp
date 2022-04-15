@@ -8,9 +8,48 @@ if logging:
 
 
 import webapp_framework as wf
-
+from dpath.exceptions import PathNotFound
 from dpath.util import set as dset
-from .dpathutils import dget, dnew
+from dpathutils import dget, dnew, dpop, walker as dictWalker
+
+
+def get_defaultVal(attrmeta):  # TODO: ask SO if there is a better way to
+    '''get default value of attrmeta
+    '''
+    cam = attrmeta
+    match str(cam.vtype):
+        case "<class 'int'>" | "<class 'bool'>" | "<class 'str'>" | "<class 'float'>":
+
+            return cam.default
+
+        # case "<aenum 'FalseDict'>":
+        #     return cam.default
+
+        # case "<aenum 'Position'>" | "<aenum 'PlotType'>" | "<aenum 'TextAlign'>" | "<aenum 'PointStyle'>" | "<aenum 'CubicInterpolationMode'>" | "<aenum 'BorderJoinStyle'>" | "<aenum 'BorderCapStyle'>" | "<aenum 'LineJoinStyle'>":
+        #     return cam.default.value
+
+        # case "<aenum 'Color'>":
+        #     return hexify(cam.default)  # TODO: will deal with later
+
+        case _:
+            print("unkown vtype :", cam)
+            raise ValueError
+
+
+def attrmeta_in_context(ctx, cfgattrmeta):
+    kpath = ctx[0]  # e.g./dbsession/id
+    newval = ctx[1]  # mynewdbsession
+    newvaltype = type(newval)
+
+    # now look for all cfg element which have ctx has (kpath, newval)
+    for _ in dictWalker(cfgattrmeta):
+        # TODO: this check should become more sophisticated
+        # moving to a sophisticated check
+        if ctx in _[1].context:
+            yield _[0]
+        elif (kpath, newvaltype) in _[1].context:
+            yield _[0]
+    pass
 
 
 def attrupdate(cfg, kpath, active):
@@ -25,9 +64,9 @@ def update_cfgmodel_kpath(kpath, val, cfg_model, cfg_ui):
     logger.info(
         f"=============update_cfgattrmeta_kpath: {kpath} {ctx}================")
 
-    kpaths_in_context = [_ for _ in attrmeta_in_context(ctx, cfgattrmeta)]
+    kpaths_in_context = [_ for _ in attrmeta_in_context(ctx, cfg_model)]
     for dpath in kpaths_in_context:
-        attrupdate(cfgattrmeta, dpath, bool(val))
+        attrupdate(cfg_model, dpath, bool(val))
         # as an example we have made x1/grid/display inactive with value None
         # when we next activate it .. its value would be False.
         # but in UI it would be true
@@ -39,19 +78,19 @@ def update_cfgmodel_kpath(kpath, val, cfg_model, cfg_ui):
 
 
 def update_cfg_model(cfg_ui, cfg_model, new_inactive_kpaths=[]):
-   for kpath in cfg_ui.get_changed_history():
-        new_val = dget(cfg, kpath)
+    for kpath in cfg_ui.get_changed_history():
+        new_val = dget(cfg_ui, kpath)
         logger.debug(f"{kpath} has changed in cfg_ui to  new_value={new_val}")
         update_cfgmodel_kpath(kpath, new_val, cfg_model, cfg_ui)
 
     for kpath in new_inactive_kpaths:
         # if the path is delete then set active to False
-        attrmeta.attrupdate(cfgmodel, kpath, False)
+        attrupdate(cfg_model, kpath, False)
         # update all dependent attributes
-        update_cfgmodel_kpath(kpath, False, cfgAttrMeta, chartcfg)
+        update_cfgmodel_kpath(kpath, False, cfg_model, cfg_ui)
 
     logger.debug("done update_cfgattrmeta...")
-        
+
 
 def update_cfg_ui(cfg_model, cfg_ui):
     logger.debug("=========== start update_cfg_ui  ===============")
@@ -73,7 +112,7 @@ def update_cfg_ui(cfg_model, cfg_ui):
     for kpath in filter(lambda kpath: dget(cfg_model, kpath).active,
                         cfg_model.get_changed_history()):
 
-        evalue = attrmeta.get_defaultVal(dget(cfgattrmeta, kpath))
+        evalue = get_defaultVal(dget(cfg_model, kpath))
         dnew(cfg_ui, kpath, evalue)
         if kpath in inactive_kpaths:
             inactive_kpaths.remove(kpath)
@@ -84,5 +123,3 @@ def update_cfg_ui(cfg_model, cfg_ui):
         logger.debug(f"paths that became inactive: {inactive_kpaths}")
     logger.debug("=========== done update_chartCfg  ===============")
     return inactive_kpaths
-
-    
