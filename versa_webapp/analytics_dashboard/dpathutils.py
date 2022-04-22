@@ -7,7 +7,7 @@ if os:
     logger.setLevel(logging.DEBUG)
 
 
-from dpath.util import get as dpath_get, new as dpath_new, delete as dpath_delete
+from dpath.util import get as dpath_get, new as dpath_new, delete as dpath_delete, set as dset
 from addict import Dict
 
 
