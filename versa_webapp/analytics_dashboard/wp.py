@@ -7,30 +7,32 @@ if logging:
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
 
-import webapp_framework as wf
+#import webapp_framework as wf
 import justpy as jp
-import components
+#import components
 from addict import Dict
-
-from sync_and_transition_matrix import cfg_model
+import ofjustpy as oj
+import ofjustpy_react as ojr
+import components
+from sync_and_transition_matrix import cfg_CM
 from sync_and_transition_matrix_helper import update_cfg_ui, update_cfg_model
-if 'appdir' in os.environ:
-    from tracker import _hcs as stubStore, session_dict, refBoard, session_dict
+
 
 from dpath.util import set as dset
 from dpathutils import dget
 cfg_ui = Dict(track_changes=True)
 
 
-# build cfg_ui based on cfg_modelv
-# i.e. all paths of cfg_model have corresponding
+# build cfg_ui based on cfg_appstate
+# i.e. all paths of cfg_appstate have corresponding
 # vaule in cfg_ui
-update_cfg_ui(cfg_model, cfg_ui)
-cfg_model.clear_changed_history()
+update_cfg_ui(cfg_CM, cfg_ui)
+cfg_CM.clear_changed_history()
 # make any other changes to ui as necessary
 
 
 def make_wp_react(wp):
+    stubStore = wp.session_manager.stubStore
 
     def update_ui():
         """
@@ -43,18 +45,18 @@ def make_wp_react(wp):
         logger.debug("in update_ui")
         inactive_kpaths = set()
         for i in range(2):
-            update_cfg_model(cfg_ui, cfg_model, inactive_kpaths)
+            update_cfg_model(cfg_ui, cfg_CM, inactive_kpaths)
             cfg_ui.clear_changed_history()
-            inactive_kpaths = update_cfg_ui(cfg_model, cfg_ui)
-            for kpath in cfg_model.get_changed_history():
+            inactive_kpaths = update_cfg_ui(cfg_CM, cfg_ui)
+            for kpath in cfg_CM.get_changed_history():
                 logger.debug(f"iter {i}: make ui change for  {kpath}")
                 #kpath = kpath.lstrip()
-                attrmeta = dget(cfg_model, kpath)
+                attrmeta = dget(cfg_CM, kpath)
                 # dbref = dget(refBoard, kpath)._go.target
                 # TODO: we need to be consistent with dget or []
                 dbref = dget(stubStore, kpath).target
                 logger.debug(
-                    f"debug_hide_unhide:  {cfg_model.keys()} {cfg_model.dbsession.keys()}")
+                    f"debug_hide_unhide:  {cfg_CM.keys()} {cfg_CM.dbsession.keys()}")
 
                 logger.debug(
                     f"debug_hide_unhide:  {kpath} {dbref.classes} {attrmeta}")
@@ -73,12 +75,9 @@ def make_wp_react(wp):
                     dbref.set_class("hidden")
             # if new attrmeta elements have active;add them to cjs_cfg
             # we should loop over updates until fix point is reached
-
-            cfg_model.clear_changed_history()
-
+            cfg_CM.clear_changed_history()
             logger.debug("post update debugging")
-
-            cfg_model.clear_changed_history()
+            cfg_CM.clear_changed_history()
             cfg_ui.clear_changed_history()
             # ===================== end update_ui ====================
 
@@ -91,8 +90,8 @@ def make_wp_react(wp):
         old_val = dget(cfg_ui, dbref.stub.spath)
         # logger.debug(
         #     f"react: updated cjs_cfg: key={dbref.key} from {old_val} to new value {msg.value}")
-        wf.dupdate(cfg_ui, dbref.stub.spath, msg.value)
-        cfg_model.clear_changed_history()  # we should loop until done
+        ojr.dupdate(cfg_ui, dbref.stub.spath, msg.value)
+        cfg_CM.clear_changed_history()  # we should loop until done
         update_ui()
     wp.update_ui_component = update_ui_component
 
@@ -109,11 +108,16 @@ def make_wp_react(wp):
 
 @ jp.SetRoute('/analytics_dashboard')
 def wp_analytics_dashboard(request):
-    wf.Container_(cgens=[stubStore.dbsession.section])
-    wp = wf.WebPage_("wp_index", page_type='quasar', head_html_stmts=[
-    ], cgens=[stubStore.tlc])()
+
+    session_manager = oj.get_session_manager(request.session_id)
+    stubStore = session_manager.stubStore
+    with oj.sessionctx(session_manager):
+        oj.Container_(cgens=[stubStore.dbsession.section])
+        wp = oj.WebPage_("wp_index", page_type='quasar', head_html_stmts=[
+        ], cgens=[stubStore.tlc])()
     make_wp_react(wp)
-    wp.model = session_dict.model
+    #wp.appstate = session_ctx.appstate
+    wp.session_manager = session_manager
     return wp
 
 

@@ -1,0 +1,46 @@
+*
+** configuration_componentMeta (cfg_CM)
+cfg_CM : follows the same hierarchy as stubStore. maintains
+is_active
+active_context
+appstate_context
+*** is_active
+tells if the corresponding component is is hidden or visible
+*** appstate context
+tells under what changes in appstate and how to react to it.
+for e.g.
+if /loaded_datamodel is changed, then
+add that to list of active models and update active models ui
+[
+                     lambda wp, val: wp.appstate.active_datamodels.append(val),
+                     lambda wp, val: wp.react_ui(
+                         wf.ReactTag_UI.UpdateActiveModels, None)
+                 ]
+                 
+* The architecture/workflow when reacting to ui event
+** handle ui event
+collect ui data,
+notify loop runner of the action to the done with the ui data
+** loop runner runs the action
+which updates the appstate
+#+BEGIN_SRC python
+wf.dupdate(appstate, "/loaded_datamodel", "newdatamodel")
+#+END_SRC 
+---> every action returns if updateappstateandui is needed to be run  and list of add-on on actions.
+
+*** loop runner runs add-on actions
+
+*** Loop runner calls  updateappstateandui if requested
+
+** update_appstate_and_ui
+*** (new_val, kpath): find json-path in appstate that have changed
+*** for each change
+**** update_cfg_CM_kpath_for_appstate_changes
+find all the cfg_CM that have registered for kpath changes
+for each of the them call the corresponding action
+op(wp, val)
+
+the op updates the appstate and calls ui updates
+***** handle inactive paths
+
+

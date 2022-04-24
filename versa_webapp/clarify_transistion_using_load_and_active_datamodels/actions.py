@@ -1,7 +1,9 @@
-import webapp_framework as wf
+#import webapp_framework as wf
+import ofjustpy_react as ojr
+# This action requires updating the appstate and the ui
 
 
-@wf.UpdateAppStateAndUI
+@ojr.UpdateAppStateAndUI
 def LOAD_DATAMODEL(appstate, event_data):
     # appstate.active_datamodels.append()
 
@@ -9,8 +11,8 @@ def LOAD_DATAMODEL(appstate, event_data):
     # to build an orm
 
     print(f"action.LOAD_DATAMODEL called {appstate}")
-    wf.dupdate(appstate, "/loaded_datamodel", "newdatamodel")
+    ojr.dupdate(appstate, "/loaded_datamodel", "newdatamodel")
     pass
 
 
-wf.make_react(LOAD_DATAMODEL, wf.ReactTag_ModelUpdate)
+ojr.make_react(LOAD_DATAMODEL, ojr.ReactTag_AppstateUpdate)

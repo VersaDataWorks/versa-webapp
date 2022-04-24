@@ -1,30 +1,35 @@
-import webapp_framework as wf
+#import webapp_framework as wf
 import traceback
 import sys
+import ofjustpy as oj
+import ofjustpy_react as ojr
 # uis for session control
 
 #import actions
 
-with wf.uictx("load_datamodels") as load_datamodels_ctx:
-    _ictx = load_datamodels_ctx
 
-    with wf.uictx("local") as localctx:
-        _ictx = localctx
+def build_components(session_manager):
+    uictx = session_manager.uictx
+    with uictx("load_datamodels") as load_datamodels_ctx:
 
-        @wf.MRVWLR
-        def on_button_click(dbref, msg):
-            print("load data model called")
-            rts = wf.TaskStack()
-            rts.addTask(wf.ReactTag_ModelUpdate.LOAD_DATAMODEL, {})
-            return msg.page, rts
+        _ictx = load_datamodels_ctx
 
-        wf.Button_("fakedataload", "fakeload",
-                   "load data model", on_button_click)
-    wf.Subsection_("panel", "Load data model from local store",
-                   _ictx.fakedataload)
+        with uictx("local") as localctx:
+            _ictx = localctx
 
+            @ojr.LoopRunner
+            def on_button_click(dbref, msg):
+                print("load data model called")
+                rts = ojr.TaskStack()
+                rts.addTask(ojr.ReactTag_AppstateUpdate.LOAD_DATAMODEL, {})
+                return msg.page, rts
 
-with wf.uictx("active_datamodels") as active_datamodels_ctx:
-    _ictx = active_datamodels_ctx
-    wf.Span_("fakelist", "putlist of models here")
-    wf.Subsection_("panel", "Active datamodels", _ictx.fakelist)
+            oj.Button_("fakedataload", value="fakeload",
+                       text="load data model").event_handle(oj.click, on_button_click)
+        oj.Subsection_("panel", "Load data model from local store",
+                       _ictx.fakedataload)
+
+    with uictx("active_datamodels") as active_datamodels_ctx:
+        _ictx = active_datamodels_ctx
+        oj.Span_("fakelist", text="put list of models here")
+        oj.Subsection_("panel", "Active datamodels", _ictx.fakelist)

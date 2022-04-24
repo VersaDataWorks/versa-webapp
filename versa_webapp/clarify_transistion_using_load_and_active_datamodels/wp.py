@@ -8,12 +8,11 @@ if logging:
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
 
-import webapp_framework as wf
 import justpy as jp
-import components
+from components import build_components
 from addict import Dict
-if 'appdir' in os.environ:
-    from tracker import _hcs as stubStore, session_dict, refBoard
+import ofjustpy as oj
+import ofjustpy_react as ojr
 
 from dpath.util import set as dset
 from dpathutils import dget
@@ -24,10 +23,12 @@ cfg_ui = Dict(track_changes=True)
 cfg_CM.clear_changed_history()
 
 
-extend_enum(wf.ReactTag_UI, "UpdateActiveModels", "UpdateActiveModels")
+extend_enum(ojr.ReactTag_UI, "UpdateActiveModels", "UpdateActiveModels")
 
 
 def make_wp_react(wp):
+    appstate = wp.appstate
+    stubStore = wp.session_manager.stubStore
     # def update_ui():
     #     """
     #     user has changed the state of input component.
@@ -41,7 +42,8 @@ def make_wp_react(wp):
 
     def update_appstate_and_ui():
         update_cfg_CM_for_appstate_changes(wp, cfg_CM)
-        print("appstate = ", wp.appstate)
+        appstate.clear_changed_history()
+
     wp.update_appstate_and_ui = update_appstate_and_ui
     # def update_appstate(dbref, msg):
     #     """
@@ -63,7 +65,7 @@ def make_wp_react(wp):
 
     def react_ui(tag, arg):
         match tag:
-            case wf.ReactTag_UI.UpdateActiveModels:
+            case ojr.ReactTag_UI.UpdateActiveModels:
                 stubStore.active_datamodels.fakelist.target.text = ",".join(
                     wp.appstate.active_datamodels)
 
@@ -78,13 +80,19 @@ def init_appstate(appstate):
 
 
 def launcher(request):
-    wp = jp.WebPage()
-    wp.appstate = session_dict.appstate
-    init_appstate(wp.appstate)
-    wf.Container_(cgens=[stubStore.load_datamodels.panel,
-                  stubStore.active_datamodels.panel])
-    stubStore.tlc(wp)
-    make_wp_react(wp)
+    session_manager = oj.get_session_manager(request.session_id)
+    stubStore = session_manager.stubStore
+
+    with oj.sessionctx(session_manager):
+        build_components(session_manager)
+        init_appstate(session_manager.appstate)
+        oj.Container_(key="tlc", cgens=[stubStore.load_datamodels.panel,
+                                        stubStore.active_datamodels.panel])
+        wp = oj.WebPage_("wp_index", page_type='quasar',
+                         cgens=[stubStore.tlc])()
+        wp.session_manager = session_manager
+        wp.appstate = wp.session_manager.appstate
+        make_wp_react(wp)
 
     return wp
 

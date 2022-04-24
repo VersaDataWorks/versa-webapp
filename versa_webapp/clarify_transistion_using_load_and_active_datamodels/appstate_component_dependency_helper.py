@@ -3,8 +3,9 @@ if logging:
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
 
-
-import webapp_framework as wf
+import ofjustpy as oj
+import ofjustpy as ojr
+#import webapp_framework as wf
 from dpath.exceptions import PathNotFound
 from dpath.util import set as dset
 
@@ -13,7 +14,7 @@ from dpathutils import dget, dnew, dpop, walker as dictWalker
 
 def components_in_appstate_changectx(new_ctx, cfg_CM):
     """
-    which components have registered for the change
+    which components have registered for the change.
     returns components path in cfgCM
     """
     kpath = new_ctx[0]  # e.g./dbsession/id
@@ -30,7 +31,7 @@ def cmeta_update_active(cfgCM, kpath, active):
     """
     cmeta_curr = dget(cfgCM, kpath)
     cmeta_new = cmeta_curr._replace(active=bool(active))
-    wf.dupdate(cfgCM, kpath, cmeta_new)
+    ojr.dupdate(cfgCM, kpath, cmeta_new)
 
 
 def update_cfg_CM_kpath_for_appstate_changes(kpath, val, cfg_CM, wp):
@@ -38,7 +39,7 @@ def update_cfg_CM_kpath_for_appstate_changes(kpath, val, cfg_CM, wp):
     update cfgCM in response to  changes in appstate at kpath
     """
     ctx = (kpath, val)
-    appstate = wp.appstate
+    appstate = wp.session_manager.appstate
     logger.info(
         f"=============update_cfgCM_kpath_for_appstate_changes: {ctx}================")
 
@@ -65,7 +66,6 @@ def update_cfg_CM_for_appstate_changes(wp, cfg_CM, new_inactive_kpaths=[]):
     """
     print("herethere")
     for kpath in wp.appstate.get_changed_history():
-        print("what man")
         new_val = dget(wp.appstate, kpath)
         logger.debug(
             f"{kpath} has changed in appstate to  new_value={new_val}")

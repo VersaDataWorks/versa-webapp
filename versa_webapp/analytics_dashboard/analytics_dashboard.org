@@ -1,0 +1,45 @@
+* Event-update-view workflow clarification
+
+** ui event; event-handler called
+** collect ui data; rts=build taskStack, handover to looprunner
+** looprunner calls actions of rts with appstate, and ui.
+** TODO  actions should return updateappstateandui and extra items
+
+
+* the loop in analytics_dashboard is different than cfg_CM loop
+** in this variant
+event handler calls update_ui_component
+which updates cfg_ui
+** next call update_ui
+** in update_ui
+update cfg_appstate
+update cfg_ui
+loop through cfg_appstate and update the ui.
+
+
+*** fixes/review
+cfg_appstate is named incorrectly.
+This is cfg_CM : config_componentMeta .. this is metadata information about a component.
+
+**** This is the final version.
+cfg_ui <-- captures the value of the component on the ui (only applicable for visible components)
+cfg_CM <-- metadata about component...what is the default value 2)
+           and transition context and rules both for appstate changes and ui_changes
+
+cfg_appstate <-- the state of the app. 
+
+Let go of TaskStack for now. 
+eventhandlers update the cfg_ui.
+cfg_ui changes cfg_appstate.
+cfg_ui and cfg_appstate changes -->  cfg_CM.
+
+
+
+
+
+* FIXIT: on_input is directly calling update_ui_component
+it should call ReactTag_Appstate
+which should change the appstate
+
+then updateappstateandui and ui be called
+context figured out and updated accordingly.

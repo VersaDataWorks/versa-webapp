@@ -7,7 +7,7 @@ if logging:
     logger.setLevel(logging.DEBUG)
 
 
-import webapp_framework as wf
+import ofjustpy_react as ojr
 from dpath.exceptions import PathNotFound
 from dpath.util import set as dset
 from dpathutils import dget, dnew, dpop, walker as dictWalker
@@ -56,7 +56,7 @@ def attrupdate(cfg, kpath, active):
 
     val_attr = dget(cfg, kpath)
     val_attr = val_attr._replace(active=bool(active))
-    wf.dupdate(cfg, kpath, val_attr)
+    ojr.dupdate(cfg, kpath, val_attr)
 
 
 def update_cfgmodel_kpath(kpath, val, cfg_model, cfg_ui):

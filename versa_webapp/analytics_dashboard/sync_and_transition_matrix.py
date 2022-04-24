@@ -16,7 +16,7 @@ class AttrMeta(NamedTuple):
     context: Any  # describes all scenarios when attribute is active
 
 
-_cfg = cfg_model = Dict(track_changes=True)
+_cfg = cfg_CM = Dict(track_changes=True)
 _cfg.dbsession.id = AttrMeta(None,  True, str,  [
                              ("/dbsession/stop", False)])
 _cfg.dbsession.start = AttrMeta(

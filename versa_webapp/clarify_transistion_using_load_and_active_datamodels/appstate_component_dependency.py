@@ -1,7 +1,8 @@
 from typing import Any, NamedTuple
 from addict import Dict
 
-import webapp_framework as wf
+import ofjustpy as oj
+import ofjustpy_react as ojr
 
 
 class ComponentMeta(NamedTuple):
@@ -23,7 +24,7 @@ _cfg.active_datamodels.fakelist = ComponentMeta(
                  [
                      lambda wp, val: wp.appstate.active_datamodels.append(val),
                      lambda wp, val: wp.react_ui(
-                         wf.ReactTag_UI.UpdateActiveModels, None)
+                         ojr.ReactTag_UI.UpdateActiveModels, None)
                  ]
                  )]
 )

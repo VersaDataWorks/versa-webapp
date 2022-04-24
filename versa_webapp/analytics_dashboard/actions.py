@@ -1,7 +1,8 @@
 import logging
 import os
 
-import webapp_framework as wf
+import ofjustpy_react as ojr
+#import webapp_framework as wf
 
 if os:
     logger = logging.getLogger(__name__)
@@ -9,33 +10,36 @@ if os:
 
 import versa_engine as ve
 
+# ojr.UpdateAppStateAndUI
 
-def START_DBSESSION(model, arg=None):
-    logger.info(f"calling start dbsession =  {model.session_id}")
-    dbsession_id = model.session_id
+
+def START_DBSESSION(appstate, arg=None):
+    logger.info(f"calling start dbsession =  {appstate.session_id}")
+    dbsession_id = appstate.session_id
     run_dir = "~/DrivingRange/" + dbsession_id
     run_dir = "/tmp/tmp5gbgkb_2/"
-    model.run_dir = run_dir
-    model.connCtx_proxy = ve.launchdbjob(dbdesc=dbsession_id, run_dir=run_dir)
-    model.op = "Start dbsession"
-    if model.connCtx_proxy is not None:
-        model.noticeboard_message = "successfully launched new database session"
-        model.op_status = wf.OpStatus.SUCCESS
+    appstate.run_dir = run_dir
+    appstate.connCtx_proxy = ve.launchdbjob(
+        dbdesc=dbsession_id, run_dir=run_dir)
+    appstate.op = "Start dbsession"
+    if appstate.connCtx_proxy is not None:
+        appstate.noticeboard_message = "successfully launched new database session"
+        appstate.op_status = ojr.OpStatus.SUCCESS
     else:
-        model.op_status = wf.OpStatus.FAILED
-        model.noticeboard_message = " Unable to launch dbsession: this event is logged"
+        appstate.op_status = ojr.OpStatus.FAILED
+        appstate.noticeboard_message = " Unable to launch dbsession: this event is logged"
 
     # be a nice boy..cleanup before you leave
 
     try:
-        model.connCtx_proxy.conn.root.shutdown_proxyService()
+        appstate.connCtx_proxy.conn.root.shutdown_proxyService()
     except EOFError:
         # when client closes the server; the client get EOFerror. This is expected. ignore it.
         pass
-    pass
+    return False, None
 
 
-wf.make_react(START_DBSESSION, wf.ReactTag_Backend)
+ojr.make_react(START_DBSESSION, ojr.ReactTag_BackendAction)
 
 
 def CONNECT_DBSESSION(model, arg=None):
@@ -51,10 +55,10 @@ def CONNECT_DBSESSION(model, arg=None):
     # model.run_dir = run_dir  # TODO
 
     #logger.info(f"connect dbsession = model.dbsession")
-    pass
+    return False, None
 
 
-wf.make_react(CONNECT_DBSESSION, wf.ReactTag_Backend)
+ojr.make_react(CONNECT_DBSESSION, ojr.ReactTag_BackendAction)
 # def BUILD_ORM(model, arg=None):
 #     # this should be run under dl context
 #     cfgxml = dl.get_page_text(arg.name_csvpack)
