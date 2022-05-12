@@ -1,3 +1,9 @@
+* test datasets for csv data model testing
+look for xml in:
+/home/shared/pre-crash-stuff/kabira/DevelopmentBackupJustBeforeRPIbootMessup/kabira/Development/versa-engine/oldcodedock/versa_all_py3/SIDAIP
+
+
+
 * Event-update-view workflow clarification
 
 ** ui event; event-handler called
@@ -21,13 +27,41 @@ loop through cfg_appstate and update the ui.
 cfg_appstate is named incorrectly.
 This is cfg_CM : config_componentMeta .. this is metadata information about a component.
 
-**** This is the final version.
+* Loop runner: final version
 cfg_ui <-- captures the value of the component on the ui (only applicable for visible components)
 cfg_CM <-- metadata about component...what is the default value 2)
            and transition context and rules both for appstate changes and ui_changes
 
-cfg_appstate <-- the state of the app. 
+appstate:
 
+** Steps:
+Setup
+1. Decorate event handler with ojr.cfglooprunner
+2. defin wp.cfgui_setval
+   which cfg_ui/spath = new value
+3. define wp.cfg_update_looprunner
+
+   
+1. call event handler
+   
+2. hook to  ojr.cfglooprunner
+   picks out spath and value
+   call cfgui_setval
+
+   
+
+4. wp.cfg_update_loop
+   4a. look at cfg_ui change history
+        update appstate
+   1. if same path is present in appstate and cfg_ui. then update
+      the appstate.
+   2. call update_CM_for_appstate_changes
+   3. list all ui actions
+   4. perform the ui actions   
+
+      
+   
+   
 Let go of TaskStack for now. 
 eventhandlers update the cfg_ui.
 cfg_ui changes cfg_appstate.

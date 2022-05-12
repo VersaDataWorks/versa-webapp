@@ -7,34 +7,40 @@ if logging:
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
 
-#import webapp_framework as wf
+# import webapp_framework as wf
 import justpy as jp
-#import components
+# import components
 from addict import Dict
 import ofjustpy as oj
 import ofjustpy_react as ojr
-import components
-from sync_and_transition_matrix import cfg_CM
-from sync_and_transition_matrix_helper import update_cfg_ui, update_cfg_model
+from .components import build_components
+from .sync_and_transition_matrix_v2 import cfg_CM, UIOps
+from .sync_and_transition_matrix_helper import update_cfg_ui, update_cfg_CM_for_appstate_changes
 
 
-from dpath.util import set as dset
-from dpathutils import dget
+from dpath.util import set as dset, search as dsearch
+from .dpathutils import dget
+from .cfg_actions import cfg_actions, exec_actions
 cfg_ui = Dict(track_changes=True)
 
 
-# build cfg_ui based on cfg_appstate
+# build cfg_ui based on cfg_CM
 # i.e. all paths of cfg_appstate have corresponding
 # vaule in cfg_ui
+# TODO:
 update_cfg_ui(cfg_CM, cfg_ui)
 cfg_CM.clear_changed_history()
+cfg_ui.clear_changed_history()
+logger.debug("---------init cfg_ui----------")
+logger.debug(cfg_ui)
 # make any other changes to ui as necessary
 
 
 def make_wp_react(wp):
     stubStore = wp.session_manager.stubStore
-
-    def update_ui():
+    appstate = wp.session_manager.appstate
+    appstate.clear_changed_history()
+    def cfg_update_loop():
         """
         user has changed the state of input component.
         this has led to change in cfg_ui.
@@ -42,58 +48,60 @@ def make_wp_react(wp):
         1. update cfg_mode based on new context in cfg_ui
         2. update ui 'hidden' attribute based newly active cfgattrmeta
         """
-        logger.debug("in update_ui")
-        inactive_kpaths = set()
-        for i in range(2):
-            update_cfg_model(cfg_ui, cfg_CM, inactive_kpaths)
-            cfg_ui.clear_changed_history()
-            inactive_kpaths = update_cfg_ui(cfg_CM, cfg_ui)
-            for kpath in cfg_CM.get_changed_history():
-                logger.debug(f"iter {i}: make ui change for  {kpath}")
-                #kpath = kpath.lstrip()
-                attrmeta = dget(cfg_CM, kpath)
-                # dbref = dget(refBoard, kpath)._go.target
-                # TODO: we need to be consistent with dget or []
-                dbref = dget(stubStore, kpath).target
-                logger.debug(
-                    f"debug_hide_unhide:  {cfg_CM.keys()} {cfg_CM.dbsession.keys()}")
 
-                logger.debug(
-                    f"debug_hide_unhide:  {kpath} {dbref.classes} {attrmeta}")
+        # update appstate from cfg_ui
+        for _ in cfg_ui.get_changed_history():
+            try:
+                res = dget(appstate, _)
+                # as long as path exists update appstate
+                if res == None or res:
+                    logger.debug(f"react-cfguichange: update appstate for path {_}")
+                    ojr.dupdate(appstate, _,  dget(cfg_ui, _))
+            except KeyError as e:
+                print(f"path {_} not in appstate")
+            except Exception as e:
+                print("here")
 
-                if attrmeta.active and 'hidden' in dbref.classes:
-                    logger.debug(f"unhide {kpath}")
-                    dbref.remove_class("hidden")
-                    # sync frontend ui and cjscfg value here
-                    logger.debug(f"""ui for {kpath} has been made visible: setting value to {dget(cfg_ui, kpath)}
-                    """)
-                    dbref.value = dget(cfg_ui, kpath)
+        cfg_ui.clear_changed_history()
+        # perform actions for updated appstate
+        
+        appstate_changeset = [_ for _ in appstate.get_changed_history()]
+        logger.debug(f"post cfgui update  appstate changes {appstate_changeset}")
+        for kpath in appstate_changeset:
+            kval = dget(appstate, kpath)
+            if(kpath, kval) in cfg_actions:
+                logger.debug(f"TODO: Exec actions for {kpath}, {kval}")
+                exec_actions(cfg_actions[(kpath,kval)], appstate)
+                print (appstate.op_status)
+            pass
 
-                    # print(kpath, " ", dbref.classes)
-                elif not attrmeta.active and not 'hidden' in dbref.classes:
-                    logger.debug(f"hide {kpath}")
-                    dbref.set_class("hidden")
-            # if new attrmeta elements have active;add them to cjs_cfg
-            # we should loop over updates until fix point is reached
-            cfg_CM.clear_changed_history()
-            logger.debug("post update debugging")
-            cfg_CM.clear_changed_history()
-            cfg_ui.clear_changed_history()
-            # ===================== end update_ui ====================
+        # actions and cfg_ui have updated appstate  ==> try to update cfg_CM and the ui
+        for kpath, uiop in update_cfg_CM_for_appstate_changes(appstate, cfg_CM):
+            match uiop:
+                case UIOps.ENABLE:
+                    target_dbref = dget(stubStore, kpath).target
+                    target_dbref.remove_class("disabled")
+                    pass
+                case UIOps.DISABLE:
+                    pass
+                case UIOps.UPDATE_NOTICEBOARD:
+                    print("notice board not yet implemented")
 
-    def update_ui_component(dbref, msg):
+        appstate.clear_changed_history()
+        pass
+
+    def cfg_ui_setval(spath, value):
         """
-        this is where the cfg_ui is updated with latest ui value.
-        then cascading
+        set value of cfg_ui at spath value
         """
 
-        old_val = dget(cfg_ui, dbref.stub.spath)
-        # logger.debug(
-        #     f"react: updated cjs_cfg: key={dbref.key} from {old_val} to new value {msg.value}")
-        ojr.dupdate(cfg_ui, dbref.stub.spath, msg.value)
-        cfg_CM.clear_changed_history()  # we should loop until done
-        update_ui()
-    wp.update_ui_component = update_ui_component
+        old_val = dget(cfg_ui, spath)
+        logger.debug(
+             f"react: update cfg_ui: key={spath} from {old_val} to new value {value}")
+        ojr.dupdate(cfg_ui, spath, value)
+
+    wp.cfg_ui_setval = cfg_ui_setval
+    wp.cfg_update_loop = cfg_update_loop
 
 
 # do a test drive
@@ -105,21 +113,28 @@ def make_wp_react(wp):
 # cfg_model.clear_changed_history()
 # cfg_ui.clear_changed_history()
 
+def init_appstate(appstate):
+    appstate.dbsession.id = None
+    appstate.dbsession.start = None
+    appstate.dbsession.stop = None
+    appstate.clear_changed_history()
 
-@ jp.SetRoute('/analytics_dashboard')
+
+@jp.SetRoute('/analytics_dashboard')
 def wp_analytics_dashboard(request):
-
     session_manager = oj.get_session_manager(request.session_id)
     stubStore = session_manager.stubStore
     with oj.sessionctx(session_manager):
-        oj.Container_(cgens=[stubStore.dbsession.section])
+        build_components(session_manager)
+        init_appstate(session_manager.appstate)
+        oj.Container_("tlc", cgens=[stubStore.dbsession.section])
         wp = oj.WebPage_("wp_index", page_type='quasar', head_html_stmts=[
         ], cgens=[stubStore.tlc])()
-    make_wp_react(wp)
-    #wp.appstate = session_ctx.appstate
     wp.session_manager = session_manager
+    make_wp_react(wp)
+    # wp.appstate = session_ctx.appstate
+
     return wp
 
-
-#wp = wp_analytics_dashboard(None)
-#stubStore.session['/dbsession/id'].target.on_input({'value': 'newval'})
+# wp = wp_analytics_dashboard(None)
+# stubStore.session['/dbsession/id'].target.on_input({'value': 'newval'})

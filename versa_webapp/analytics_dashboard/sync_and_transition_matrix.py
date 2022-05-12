@@ -1,6 +1,6 @@
 from typing import Any, NamedTuple
 
-from dpathutils import dget, dnew
+from .dpathutils import dget, dnew
 from addict import Dict
 from aenum import Enum, auto
 from dpath.util import set as dset
