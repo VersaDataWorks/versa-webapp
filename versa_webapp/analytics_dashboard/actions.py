@@ -130,3 +130,23 @@ def BUILD_ORM(appstate, arg=None):
 
     pass
 
+
+def EXPORT_RMO_TABULATE(appstate, arg=None):
+    try:
+        logger.debug("in actions.EXPORT_RMO_TABULATE")
+        logger.debug(f"appstate = {appstate}")
+        trmo = appstate.analytics.active_rmo
+        dbsession = appstate.dbsession.dbsession
+        exformat = appstate.exportrmo.tabulate.format
+        res = ve.exapi.build_tabulate(dbsession, trmo, exformat)
+        appstate.exportrmo.tabulate.text = f"{res}"
+        appstate.noticeboard_message = "rmo tabulate export successful "
+        appstate.op_status = ojr.OpStatus.SUCCESS
+    except Exception as e:
+        appstate.op_status = ojr.OpStatus.FAILED
+        appstate.noticeboard_message = "Operation failed Unable to export"
+        logger.debug(f"EXPORT_RMO_TABULATE failed with error {e}")
+        logger.debug(traceback.format_exc())
+
+        
+        
