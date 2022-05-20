@@ -2,6 +2,20 @@
 python3 -m http.server --bind 192.168.0.183 9000
 
 
+* website architecture
+uictx paths
+** wp_save_csvpack
+*** save_csvpack/
+**** dl/
+***** panel
+**** local/
+***** panel
+**** Haligntitle
+**** deckSection
+
+
+
+
 
 * Plan
 - start with vpage_testing_v2.py
