@@ -19,6 +19,8 @@ from versa_webapp.wp_save_csvpack import wp_save_csvpack
 import justpy as jp
 from addict import Dict
 
+request = Dict()
+request.session_id = "abc123"
 
 # =================== launch csvdata_input webpage ===================
 
@@ -27,16 +29,20 @@ from addict import Dict
 # ================================ end ===============================
 
 # ================== td csvdata input button submit ==================
-request = Dict()
-request.session_id = "abc123"
-# wp = wp_csvdata_input(request)
-# stubStore = wp.session_manager.stubStore
-# msg = Dict()
-# msg.page = wp
 
-# stubStore.csvinput.csvurl.target.value = 'http://192.168.0.183:9000/airport_to_counties.csv'
-# stubStore.csvinput.form.target.on_submit(msg)
-# print(wp.session_manager.appstate)
+wp = wp_csvdata_input(request)
+stubStore = wp.session_manager.stubStore
+msg = Dict()
+msg.page = wp
+
+stubStore.csvinput.csvurl.target.value = 'http://192.168.0.183:9000/airport_to_counties.csv'
+stubStore.csvinput.form.target.on_submit(msg)
+import jsbeautifier
+import json
+opts = jsbeautifier.default_options()
+res = jsbeautifier.beautify(json.dumps(wp.session_manager.appstate), opts)
+    
+print(res)
 # ================================ end ===============================
 
 
@@ -61,10 +67,13 @@ request.session_id = "abc123"
 
 #app = jp.app
 #jp.justpy(wp_save_csvpack, start_server=False)
-wp = wp_save_csvpack(request)
 
-stubStore = wp.session_manager.stubStore
-msg = Dict()
-msg.page = wp
-stubStore.save_csvpack.dl.ti_newcfg.target.value = "testmodel"
-stubStore.save_csvpack.dl.submit.target.on_click(msg)
+
+# wp = wp_save_csvpack(request)
+
+# stubStore = wp.session_manager.stubStore
+# msg = Dict()
+# msg.page = wp
+# stubStore.save_csvpack.dl.ti_newcfg.target.value = "testmodel"
+# stubStore.save_csvpack.dl.submit.target.on_click(msg)
+

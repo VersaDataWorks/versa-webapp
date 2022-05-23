@@ -91,6 +91,7 @@ def wp_save_csvpack(request):
     actions.ANALYZE_CSV_CONTENT(appstate, None)
     with open('gencsvcfg_panel_value.pickle', 'rb') as fh:
         uav = pickle.load(fh)
+    logger.debug(f"loaded uav {uav}")
     actions.CSV_METADATA_AS_XML(appstate, uav)
     appstate.save_csvpack.model_name = None
     # ============================== end =============================

@@ -65,9 +65,10 @@ def ANALYZE_CSV_CONTENT(appstate, arg):
     if "http://" in url and not content:
         try:
             filename, content  = ve.download_url(url)
+            logger.debug(f"ANALYZE url filename {url} {filename}")
             arg = Dict({
                                       'file_name': filename,
-                                      'file_content': content
+                                      'file_content': content,
                                   })
             GEN_CSV_METADATAREPORT(appstate, arg)
         except Exception as e:
@@ -101,13 +102,15 @@ def CSV_METADATA_AS_XML(appstate, arg):
     self.model.edcfg.schema_xdef: the metadata definition of csv file
     '''
     print ("calling CSV_METADATA_AS_XML")
-    #using OpaqueDict 
-    uav = appstate.gencsvcfg_panel.value
-    with open("gencsvcfg_panel_value.pickle", "wb") as fh:
-        import json
-        jstr = json.dumps(uav)
-        ttmp = json.loads(jstr)
-        pickle.dump(ttmp, fh)
+    #using OpaqueDict
+    uav = Dict(arg)
+    #uav = appstate.gencsvcfg_panel.value
+    # with open("gencsvcfg_panel_value.pickle", "wb") as fh:
+    #     import json
+    #     jstr = json.dumps(uav)
+    #     ttmp = json.loads(jstr)
+    #     logger.debug(f"uav dump = {ttmp}")
+    #     pickle.dump(ttmp, fh)
 
     appstate.edcfg.schema_xdef = ve.csv_utils.build_csv_metadata_v2(
         uav.csv_datamodel_label,
@@ -120,10 +123,10 @@ def CSV_METADATA_AS_XML(appstate, arg):
     )
     logger.debug(f"metadata as xdef {appstate.edcfg.schema_xdef}")
     metadata_fn = uav.csv_datamodel_label + ".md"
-
+    logger.debug(f"csv_datamodel_label = {uav.csv_datamodel_label}")
     appstate.edcfg.schema_xelem = ve.dataapis.build_file_element(
-        appstate.csv_file_name,
-        appstate.metadata_fn,
+        appstate.metadata_edits.csv_file_name,
+        metadata_fn,
         uav.csv_datamodel_label,
         appstate.metadata_report.delimiter_name,
         appstate.metadata_report.num_header_lines)
