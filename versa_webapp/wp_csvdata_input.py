@@ -87,10 +87,16 @@ def wp_csvdata_input(request):
         path_guards = set()
         path_guards.add("/metadata_report")
         path_guards.add("/metadata_edits")
-        wp = oj.WebPage_("wp_csvdata_input", cgens=[stubStore.tlc], WPtype=ojr.WebPage,
+        wp = oj.WebPage_("wp_csvdata_input",
+                         cgens=[stubStore.tlc],
+                         WPtype=ojr.WebPage,
                          
-                        ui_app_trmap_iter=ui_app_trmap_iter, app_ui_trmap_iter=app_ui_trmap_iter,
-                         app_actions_trmap_iter=app_actions_trmap_iter, path_guards=path_guards, session_manager=session_manager )()
+                         ui_app_trmap_iter=ui_app_trmap_iter,
+                         app_ui_trmap_iter=app_ui_trmap_iter,
+                         app_actions_trmap_iter=app_actions_trmap_iter,
+                         path_guards=path_guards,
+                         reactctxs = [ojr.Ctx("/wp_redirect", ojr.isstr, ojr.UIOps.REDIRECT)],
+                         session_manager=session_manager )()
 
         
     uistate = wp.uistate
