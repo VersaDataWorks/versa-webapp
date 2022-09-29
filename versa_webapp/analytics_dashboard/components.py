@@ -43,9 +43,9 @@ def build_components(session_manager):
         def on_stopbtn_click(dbref, msg):
             pass
         oj.ToggleBtn_("start", text="start",
-                      value=False, pcp=['disabled']).event_handle(oj.iinput, on_startbtn_click)
+                      value=False, pcp=['disabled']).event_handle(oj.input, on_startbtn_click)
 
-        oj.ToggleBtn_("stop", text="stop",   pcp=['disabled']).event_handle(oj.iinput, on_stopbtn_click)
+        oj.ToggleBtn_("stop", text="stop",   pcp=['disabled']).event_handle(oj.input, on_stopbtn_click)
 
         def on_shutdown_click(dbref, msg):
             actions.shutdown_proxyService(appstate)

@@ -29,16 +29,18 @@ ui_app_trmap_iter = [ ("/gencsvcfg_panel", ("/gencsvcfg_panel", None)
                       
                      ]
 
+app_actions_trmap_iter = [
+    ("/save_csvpack/model_name", [actions.GEN_EDCFG_FILE])
+    
+]                     
+
+
 app_ui_trmap_iter = [("/wp_csvdata_input",  # 
                       ojr.AttrMeta(None, [ojr.Ctx("/wp_redirect", ojr.isstr, ojr.UIOps.REDIRECT)])
                       )
 
 ]
 
-app_actions_trmap_iter = [
-    ("/save_csvpack/model_name", [actions.GEN_EDCFG_FILE])
-    
-]                     
 
 path_guards = set(["/gencsvcfg_panel", "/metadata_report", "/metadata_edits"])
 
