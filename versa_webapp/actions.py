@@ -58,7 +58,12 @@ def GEN_CSV_METADATAREPORT(appstate, event_args):
     pass
 
 def ANALYZE_CSV_CONTENT(appstate, arg):
+    """
+    appctx:/csvinput/url_and_content
+    """
     print ("calling ANALYZE_CSV_CONTENT")
+    print ("with appstate= ", appstate )
+    print ("with arg = ", arg)
 
     (url, content) = appstate.csvinput.url_and_content
     #url with no content
@@ -82,8 +87,10 @@ def ANALYZE_CSV_CONTENT(appstate, arg):
             
     return 
 
-#@ojr.AppctxTrigger("/OpStatus")
 def SET_REDIRECT(appstate, arg):
+    """
+    appctx:/op_status
+    """
     if appstate.op_status == ojr.OpStatus.SUCCESS and appstate.op == "GEN_CSV_METADATAREPORT":
         appstate.wp_redirect = "/csv_metadata"
 

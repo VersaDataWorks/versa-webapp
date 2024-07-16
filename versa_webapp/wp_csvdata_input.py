@@ -97,7 +97,7 @@ def wp_csvdata_input(request):
                          path_guards=path_guards,
                          reactctxs = [ojr.Ctx("/wp_redirect", ojr.isstr, ojr.UIOps.REDIRECT)],
                          session_manager=session_manager )()
-
+        
         
     uistate = wp.uistate
     #initialize uistate with paths not in app_ui_trmap
