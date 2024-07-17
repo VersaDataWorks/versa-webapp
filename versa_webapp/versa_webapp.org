@@ -1,5 +1,11 @@
 * Setup and running
+
+cd /home/kabiraatmonallabs/Databank/versa-dl/content
 python3 -m http.server --bind 192.168.0.183 9000
+
+cd /home/kabiraatmonallabs/Development/VersaDataWorks/versa-webapp/run_app
+uvicorn --host devboxchuwi --port 8000 --ssl-keyfile /home/kabiraatmonallabs/Execution/ofjustpy/server.key --ssl-certfile /home/kabiraatmonallabs/Execution/ofjustpy/server.crt --reload     --reload-dir ./ --reload-dir  /home/kabiraatmonallabs/Development/VersaDataWorks/versa-webapp/versa_webapp  versa_webapp.wp_csvdata_input_v2:app
+
 
 
 * website architecture

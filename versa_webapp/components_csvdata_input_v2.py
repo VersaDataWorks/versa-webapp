@@ -10,8 +10,8 @@ import sys
 if sys:
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
-import justpy as jp
-from tailwind_tags import noop, fz, bg, pink, flx
+
+from py_tailwind_utils import noop, fz, bg, pink, flx
 from addict import Dict
 import ofjustpy as oj
 import ofjustpy_react as ojr
@@ -22,53 +22,65 @@ def no_action(dbref, msg):
     pass
 
 
-def build_components(session_manager):
-    stubStore = session_manager.stubStore
 
-    with session_manager.uictx("csvinput") as csvinputctx:
-        _ictx = csvinputctx
+    
+
+@ojr.CfgLoopRunner
+def on_submit(dbref, msg, to_ms):
+    form_data = msg.page.session_manager.request.state.form_data["/csvinput/form"]
+    print (f"check form data : /csvinput/form", form_data)
+
+    csvurl = form_data['/csvinput/csvurl']
+    if csvurl:
+        return "/csvinput/panel", (csvurl, None)
+    else:
+        print ("not valid input")
         
-        @ojr.CfgLoopRunner
-        def on_submit(dbref, msg):
-            #print("csvfile target", _ctx.csvfile.target)
-            print("on submit called")
-            spath = None
-            csvurl = None
-            csvcontent = None
-            
-            # print("msg == ", msg)
-            csvurl = _ictx.csvurl.target.value
-            csvcontent = None
-            if csvurl != 'http://address.of.csv.file/':
-                print("in form submit:url ", csvurl, csvcontent)
-                return "/csvinput/panel", (csvurl, csvcontent)
-            # # print("csvurl = ", csvurl)
-            # # rts = wf.TaskStack()
-            # # if csvurl.strip() != 'http://address.of.csv.file/':
-            # #     rts.addTask(wf.ReactTag_ModelUpdate.CSV_URL_INPUT,
-            # #                 Dict({'url': csvurl}))
-            # #     rts.addTask(wf.ReactTag_Backend.CHECK_OP_STATUS, None)
-            selected_file_info = msg.form_data[1]
-            if selected_file_info.value.strip() != '':
-                csvurl  = "file://" + selected_file_info.files[0].name
-                csvcontent = base64.b64decode(
-                    selected_file_info.files[0].file_content)
+    # spath = None
+    # csvurl = None
+    # csvcontent = None
+    # csvurl = msg.value
+    # print("input url = ", _ss.csvinput.csvurl.target.value)
+    # csvcontent = None
+    # if csvurl != 'http://address.of.csv.file/':
+    #     print("in form submit:url ", csvurl, csvcontent)
+    #     return "/csvinput/panel", (csvurl, csvcontent)
+    # selected_file_info = msg.form_data[1]
+    # if selected_file_info.value.strip() != '':
+    #     csvurl  = "file://" + selected_file_info.files[0].name
+    #     csvcontent = base64.b64decode(
+    #         selected_file_info.files[0].file_content)
 
-            # rts.addTask(wf.ReactTag_ModelUpdate.GEN_CSV_METADATAREPORT, Dict(
-            #     {'file_name': csvfile, 'file_content': csvcontent}))
-            # rts.addTask(wf.ReactTag_Backend.CHECK_OP_STATUS, None)
-            # print("pass batton to MVULR")
-            print("in form submit:file ", csvurl, csvcontent)
-            return "/csvinput/panel", (csvurl, csvcontent)
+    # print("in form submit:file ", csvurl, csvcontent)
+    # return "/csvinput/panel", (csvurl, csvcontent)
 
-        oj.InputChangeOnly_("csvurl", text="Enter a url hosting raw csv data",
-                       value = "http://address.of.csv.file/", type="text")
-        oj.Input_("csvfile", text="Choose an ondisk file", type="file")
-        oj.Halign_(oj.Span_("orsep", text="or", pcp=[noop/fz.xl2]))
-        oj.StackV_("input", cgens=[_ictx.csvurl, _ictx.Halignorsep, _ictx.csvfile])
-        oj.Button_("submit", text="Analyze CSV file").event_handle(oj.click, on_submit)
-        #wf.StackH_("contentFrame", cgens=[_ctx.input, _ctx.submit])
-        oj.Form_("form", _ictx.input, _ictx.submit)
-    oj.Align_(oj.Subsection_("input_panel_body", "CSV data input form", _ictx.form), key="panel", pcp=[flx.one])
+def on_input_change(dbref, msg, to_ms):
+    pass
+with oj.uictx("csvinput") as csvinputctx:
+    _ictx = csvinputctx
+    _1 = oj.AC.TextInput(key="csvurl",
+                    placeholder="Enter a url hosting raw csv data",
+                    value = "http://address.of.csv.file/",
+                         type="text",
+                         on_change = on_input_change
+                    )
+    _2 = oj.AC.TextInput(key="csvfile", placeholder="Choose an ondisk file", type="file")
+    _3 = oj.Halign(oj.PC.Span(text="or", twsty_tags=[noop/fz.xl2]))
+    _inp = oj.PC.StackV(childs=[_1, _3, _2]
+                 )
+    _btn = oj.AC.Button(key="submit",
+                  text="Analyze CSV file",
+                  on_click=on_submit)
 
-    # BRB
+    _form = oj.AD.Form(key="form",
+               childs = [_inp, _btn
+
+                         ],
+               on_submit = on_submit
+               )
+    input_panel= oj.PC.Subsection("CSV data input form", oj.PC.StackV(childs = [_form]
+
+                                                         )
+                     )
+    
+    
