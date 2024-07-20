@@ -9,7 +9,7 @@ import ofjustpy_react as ojr
 
 from .components_csvdata_input_v2 import input_panel 
 from . import actions
-app = oj.build_app()
+app = oj.load_app()
 ui_app_trmap = [
     ("/csvinput/panel", "/csvinput/url_and_content", None)
     ]

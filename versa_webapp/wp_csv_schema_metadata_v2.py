@@ -13,7 +13,7 @@ import justpy as jp
 import ofjustpy as oj
 import ofjustpy_react as ojr
 from .wp_template import page_builder
-from .components_csv_schema_metadata_v2 import build_components
+from .components_csv_schema_metadata_v3 import build_components
 from . import actions
 from tailwind_tags import * 
 

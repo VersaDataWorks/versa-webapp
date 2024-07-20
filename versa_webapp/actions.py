@@ -7,6 +7,7 @@ import versa_engine as ve
 from addict import Dict
 import ofjustpy_react as ojr
 import pickle
+from . import  wp_csv_schema_metadata_v3
 def GEN_CSV_METADATAREPORT(appstate, event_args):
     '''
     file_value: is portion of the form data recieved from the front end.
@@ -92,7 +93,11 @@ def SET_REDIRECT(appstate, arg, webpage):
     appctx=/op_status
     """
     if appstate.op_status == ojr.OpStatus.SUCCESS and appstate.op == "GEN_CSV_METADATAREPORT":
-        appstate.wp_redirect = "/csv_metadata"
+        # TODO: define a unique label for this dataset
+        data_label = "alpha"
+        wp_csv_schema_metadata_v3.create_endpoint(appstate, data_label)
+        
+        appstate.wp_redirect = f"/csv_metadata_{data_label}"
 
     if appstate.op_status == ojr.OpStatus.SUCCESS and appstate.op == "CSV_METADATA_AS_XML":
         appstate.wp_redirect = "/savecfg"        
