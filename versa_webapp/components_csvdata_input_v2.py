@@ -59,12 +59,15 @@ def on_input_change(dbref, msg, to_ms):
 with oj.uictx("csvinput") as csvinputctx:
     _ictx = csvinputctx
     _1 = oj.AC.TextInput(key="csvurl",
-                    placeholder="Enter a url hosting raw csv data",
-                    value = "http://address.of.csv.file/",
+                         placeholder="Enter a url hosting raw csv data",
+                         value = "http://address.of.csv.file/",
                          type="text",
                          on_change = on_input_change
                     )
-    _2 = oj.AC.TextInput(key="csvfile", placeholder="Choose an ondisk file", type="file")
+    _2 = oj.AC.TextInput(key="csvfile",
+                         placeholder="Choose an ondisk file",
+                         value=None,
+                         type="file")
     _3 = oj.Halign(oj.PC.Span(text="or", twsty_tags=[noop/fz.xl2]))
     _inp = oj.PC.StackV(childs=[_1, _3, _2]
                  )

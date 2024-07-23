@@ -184,4 +184,3 @@ blockquote = []
 titledPara = [shadow._, shadow/slate/"200/50", pd/3]
 
 sideMenu_btn = [ ]
-fontawesome = []

@@ -64,6 +64,7 @@ divbutton = []
 
 expansion_item = []
 
+inputJbutton = []
 select = [bd/none, W/20]
 selectwbanner = []
 
@@ -79,7 +80,7 @@ expansion_item = []
 textarea = []
 
 textinput = []
-input = [H/8, bd/none, pd/0, mr/0, W/28, pd/sl/2, shadow.inner, boxshadow/gray/"400/50"]
+input = [H/6, bd/none, pd/0, mr/0]
 
 cell = []
 
@@ -120,7 +121,7 @@ expansion_container = [fz.lg]
 
 togglebtn = []
 
-checkbox = [size/4, bdr.sm, bd/gray/300]
+checkbox = [size/4, bdr.md, bd/gray/300]
 
 
 def halign(align="center"):
@@ -184,4 +185,3 @@ blockquote = []
 titledPara = [shadow._, shadow/slate/"200/50", pd/3]
 
 sideMenu_btn = [ ]
-fontawesome = []

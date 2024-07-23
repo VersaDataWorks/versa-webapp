@@ -106,16 +106,12 @@ def SET_REDIRECT(appstate, arg, webpage):
     pass
 
 
-def CSV_METADATA_AS_XML(appstate, arg):
+def CSV_METADATA_AS_XML(appstate, arg, webpage):
     '''
-    uav: ui_action_value
-
-    outcome:
-    self.model.edcfg.schema_xdef: the metadata definition of csv file
+    appctx=/csv_schema_metadata/gencsvcfg_panel
     '''
-    print ("calling CSV_METADATA_AS_XML")
-    #using OpaqueDict
-    uav = Dict(arg)
+    print ("calling CSV_METADATA_AS_XML: with arg = ", arg)
+    uav = arg
     #uav = appstate.gencsvcfg_panel.value
     # with open("gencsvcfg_panel_value.pickle", "wb") as fh:
     #     import json
@@ -142,31 +138,38 @@ def CSV_METADATA_AS_XML(appstate, arg):
         uav.csv_datamodel_label,
         appstate.metadata_report.delimiter_name,
         appstate.metadata_report.num_header_lines)
-    logger.debug(f"edcfg defination: {appstate.edcfg.schema_xdef}")
+    logger.debug(f"edcfg.schema_xelem: {appstate.edcfg.schema_xelem}")
     appstate.edcfg.schema_xfn = metadata_fn
     appstate.op_status = ojr.OpStatus.SUCCESS
     appstate.op = "CSV_METADATA_AS_XML"
     pass
 
 
-#@ojr.AppctxTrigger("/blah/blah")
-def GEN_EDCFG_FILE(appstate, arg):
-    print ("calling GEN_EDCFG_FILE")
-    print(appstate)
-    appstate.edcfg.dpcfg_xfn = appstate.save_csvpack.model_name + ".csvpack"
-    #build  edcfg and write to file
-    logger.debug(f"build edcfg  {appstate.edcfg.schema_xfn}")
+
+def GEN_EDCFG_FILE(appstate, arg, page):
+    """
+    appctx=/save_csv_metadatacfg/local
+    """
+    
+    appstate.edcfg.dpcfg_xfn = arg.model_name  + ".csvpack" # appstate.save_csvpack.model_name + ".csvpack"
+    print ("schema_xelem = ", ve.xu.tostring(appstate.edcfg.schema_xelem))
+    
     [dpcfg_xelem, xistr] = ve.build_edcfg_elem(
         [appstate.edcfg.schema_xelem], appstate.edcfg.dpcfg_xfn)
 
+
     appstate.edcfg.dpcfg_xelem = dpcfg_xelem
     appstate.edcfg.xistr = xistr
-
-    logger.debug(f"write metadata to  {appstate.edcfg.schema_xfn}")
+    
+    print ("dpcfg_xelem = ",  ve.xu.tostring(appstate.edcfg.dpcfg_xelem))
+    print ("xistr = ", appstate.edcfg.xistr)
+    
     with open(appstate.edcfg.schema_xfn, "w") as fh:
         fh.write(appstate.edcfg.schema_xdef)
 
-    # with open(appstate.edcfg.dpcfg_xfn, "w") as fh:
-    #     fh.write(ve.xml_tostring(appstate.edcfg.dpcfg_xelem))
-        
+    with open(appstate.edcfg.dpcfg_xfn, "w") as fh:
+        fh.write(ve.xu.tostring(appstate.edcfg.dpcfg_xelem))
+
+    with open(arg.model_name + ".xistr", "w") as fh:
+        fh.write(appstate.edcfg.xistr)
     pass

@@ -4,7 +4,7 @@ from py_tailwind_utils import *
 from ofjustpy.HC_wrappers import Halign
 def build_btn(key, text, **kwargs):
     with writer_ctx:
-        with Button(key=key, classes="group relative h-12 inline-block text-sm font-medium text-gray-600 focus:outline-none focus:ring focus:ring-gray-500 active:text-gray-500", **kwargs) as btn_box:
+        with Button(key=key, classes="group relative h-12 inline-block text-sm font-medium text-gray-600 focus:outline-none focus:ring active:text-gray-500", **kwargs) as btn_box:
             with Span(classes="absolute inset-0  bg-gray-600 ", extra_classes="translate-x-0.5 translate-y-0.5 transition-transform group-hover:translate-x-0 group-hover:translate-y-0"):
                 pass
             with Span(classes="relative block border border-current bg-white px-8 py-3", text=text):

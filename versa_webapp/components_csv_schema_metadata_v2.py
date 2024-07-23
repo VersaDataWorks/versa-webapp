@@ -97,6 +97,21 @@ def build_ui_colnames():
                                               ],
                                     twsty_tags=[ai.center, space/x/1, bg/gray/100, pd/1, mr/st/1]
                                     )
+                yield oj.PD.StackH(childs =[oj.AD.CheckboxInput(key=f"is_pk_{col_pos}"),
+                                            oj.PC.Span(text="is primary key",
+                                                       twsty_tags=[shadow.inner, boxshadow/gray/"400/50", pd/1])
+                                            ],
+                                    twsty_tags=[ai.center, space/x/1, bg/gray/100, pd/1, mr/st/1]
+                                   )
+
+                yield oj.PD.StackH(childs =[oj.AD.CheckboxInput(key=f"is_hn_{col_pos}"),
+                                            oj.PC.Span(text="has nulls",
+                                                       twsty_tags=[shadow.inner, boxshadow/gray/"400/50", pd/1])
+                                            ],
+                                    twsty_tags=[ai.center, space/x/1, bg/gray/100, pd/1, mr/st/1]
+                                   )                
+
+                
 
             yield oj.PD.StackV(childs=[_ for _ in items()], twsty_tags=[space/y/2])
 
