@@ -30,7 +30,7 @@ ui_app_trmap_iter = [
 def post_init(wp, session_manager=None):
     pass
 
-from .components_save_csvpack_v2 import title, savecfg_panel
+from .components_save_csvpack_v3 import title, savecfg_panel
 tlc = oj.HCCMutable.Container(childs = [title,
                                         savecfg_panel
                                         ]

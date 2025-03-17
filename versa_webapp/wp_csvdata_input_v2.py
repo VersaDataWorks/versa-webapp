@@ -4,7 +4,7 @@ the v2 version uses ofjustpy-react, i.e, ui_app_keymap, actions (with context), 
 """
 
 import ofjustpy as oj
-from py_tailwind_utils import H, full, bg, green, rose, flx
+from py_tailwind_utils import H, full, bg, green, rose
 import ofjustpy_react as ojr
 
 from .components_csvdata_input_v2 import input_panel 

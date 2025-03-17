@@ -11,7 +11,7 @@ if sys:
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
 
-from py_tailwind_utils import noop, fz, bg, pink, flx
+from py_tailwind_utils import noop, fz, bg, pink
 from addict import Dict
 import ofjustpy as oj
 import ofjustpy_react as ojr
@@ -26,13 +26,13 @@ def no_action(dbref, msg):
     
 
 @ojr.CfgLoopRunner
-def on_submit(dbref, msg, to_ms):
+async def on_submit(dbref, msg, to_ms):
     form_data = msg.page.session_manager.request.state.form_data["/csvinput/form"]
     print (f"check form data : /csvinput/form", form_data)
 
     csvurl = form_data['/csvinput/csvurl']
     if csvurl:
-        return "/csvinput/panel", (csvurl, None)
+        return [("/csvinput/panel", (csvurl, None))]
     else:
         print ("not valid input")
         

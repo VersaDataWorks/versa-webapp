@@ -9,10 +9,10 @@ from . import background_sty
 from hyperui_plugin.tables import Simple as SimpleTable
 import ofjustpy_react as ojr
 
-def on_alt_colname_inp(dbref, msg, to_ms):
+async def on_alt_colname_inp(dbref, msg, to_ms):
     pass
 
-def on_coltype_select(dbref, msg, to_ms):
+async def on_coltype_select(dbref, msg, to_ms):
     pass
 
 
@@ -179,7 +179,7 @@ def build_components(metadata_report):
             stats_box = oj.PD.Details(classes="group", extra_classes="[&_summary::-webkit-details-marker]:hidden",
                           childs = [oj.PD.Summary(classes="flex cursor-pointer items-center justify-between gap-1.5 bg-slate-100 p-4 text-gray-900 rounded-t-lg",
                                                   childs=[oj.PD.Div(childs=[oj.PC.H2(text="Stats")],
-                                                                    twsty_tags=[flx.one, db.f, jc.center]
+                                                                    twsty_tags=[flxrsz.one, db.f, jc.center]
                                                                     ),
                                                           oj.icons.FontAwesomeIcon(label="faPlus",
                                                                                    classes="w-5 h-5"
@@ -201,7 +201,7 @@ def build_components(metadata_report):
             samples_box = oj.PD.Details(classes="group", extra_classes="[&_summary::-webkit-details-marker]:hidden",
                           childs = [oj.PD.Summary(classes="flex cursor-pointer items-center justify-between gap-1.5 bg-slate-100 p-4 text-gray-900 rounded-t-lg",
                                                   childs=[oj.PD.Div(childs=[oj.PC.H2(text="Row Samples")],
-                                                                    twsty_tags=[flx.one, db.f, jc.center]
+                                                                    twsty_tags=[flxrsz.one, db.f, jc.center]
                                                                     ),
                                                           oj.icons.FontAwesomeIcon(label="faPlus",
                                                                                    classes="w-5 h-5"
@@ -239,7 +239,7 @@ def build_components(metadata_report):
 
         # wrap everything within one giant form
         @ojr.CfgLoopRunner
-        def on_form_submit(dbref, msg, to_ms):
+        async def on_form_submit(dbref, msg, to_ms):
             appstate = msg.page.session_manager.appstate
             res = Dict()  # collect all the results
             res.cols_type = [dbref.get_comp_value(msg.page, coltypesctx[f"selector_{idx}"].id)
@@ -270,7 +270,7 @@ def build_components(metadata_report):
                                                            )
             res.freeze()
 
-            return "/csv_schema_metadata/gencsvcfg_panel",  res
+            return [("/csv_schema_metadata/gencsvcfg_panel",  res)]
         #return "/csv_schema_metadata/gencsvcfg_panel",  res
 
 
