@@ -6,8 +6,10 @@ if os:
 
 
 from addict import Dict
-import ofjustpy as oj
-import ofjustpy_react as ojr
+import kavya as kv
+import kavya_react as kvr
+from kavya_components import StackD
+
 # from aenum import extend_enum, Enum
 # from .model_backend_actions import GEN_EDCFG_FILE, EDCFG_DL_NEW, EDCFG_DL_APPEND
 # extend_enum(wf.ReactTag_ModelUpdate, "GEN_EDCFG_FILE", GEN_EDCFG_FILE)
@@ -15,15 +17,17 @@ import ofjustpy_react as ojr
 # extend_enum(wf.ReactTag_Backend,  "EDCFG_DL_APPEND", EDCFG_DL_APPEND)
 
 
-with oj.uictx("save_csvpack") as save_csvpack_ctx:
-    async def eh_toggle_localdl(dbref, msg, to_ms):
+with kv.uictx("save_csvpack") as save_csvpack_ctx:
+    async def eh_toggle_localdl(dbref, msg, wp, request):
         '''
             going from key to FQN
             self.value is the key
         '''
+        assert False
         print("eh_toggle_localdl called")
 
         print("deck via stubStore = ", msg.page.session_manager.stubStore.save_csvpack.savecfg_deck.target)
+
         deck_ms = to_ms(save_csvpack_ctx["savecfg_deck"])
         print("the deck ", deck_ms, " ", dbref.value)
         deck_ms.bring_to_front(dbref.value)
@@ -33,21 +37,21 @@ with oj.uictx("save_csvpack") as save_csvpack_ctx:
         # logger.debug("bring {_ctx[msg.value].panel.spath} to front")
         #save_csvpack_ctx.deck.target.bring_to_front(save_csvpack_ctx[msg.value].panel.spath)
         pass
-    with oj.uictx("dl") as dlctx:
-        dl_btn = oj.AD.Button(key="dlbtn",
+    with kv.uictx("dl") as dlctx:
+        dl_btn = kv.AD.Button(key="dlbtn",
                               value="/save_csvpack/dl/save_dl_panel",
-                     text="on csvpack dl",
-                     on_click = eh_toggle_localdl
-                     )
-        ti_newcfg = oj.AD.TextInput(key="ti_newcfg",
-                        value = "newcfg.cfg",
-                                   placeholder = "newpack.cfg",
+                              text="on csvpack dl",
+                              on_click = eh_toggle_localdl
+                              )
+        ti_newcfg = kv.AD.TextInput(key="ti_newcfg",
+                                    value = "newcfg.cfg",
+                                    placeholder = "newpack.cfg",
                                     
-                        )
-        or_sep = oj.PC.Span(text="or")
-        dlsearchbar = oj.PC.Span(text="make a mediawiki/search bar")
-        @ojr.CfgLoopRunner
-        async def eh_submit_btn(dbref, msg, to_ms):
+                                    )
+        or_sep = kv.PC.Span(text="or")
+        dlsearchbar = kv.PC.Span(text="make a mediawiki/search bar")
+        @kvr.ReactDomino
+        async def eh_submit_btn(dbref, msg, wp, request):
             '''
             scd : savecfgdl
             '''
@@ -59,37 +63,37 @@ with oj.uictx("save_csvpack") as save_csvpack_ctx:
             return [("/save_csvpack/dl/savecfgas", value_newcfg)]
 
 
-        submit_btn = oj.AD.Button(key="submit",
+        submit_btn = kv.AD.Button(key="submit",
                      text="submit",
                      value="Submit",
                      on_click = eh_submit_btn
                      )
 
-        save_dl_panel = oj.Mutable.StackV(key="save_dl_panel", childs=[ti_newcfg,
+        save_dl_panel = kv.MD.StackV(key="save_dl_panel", childs=[ti_newcfg,
                                     or_sep,
                                     dlsearchbar,
                                     submit_btn]
                              )
-    with oj.uictx("local") as localctx:
-        local_btn = oj.AD.Button(key="local_btn",
+    with kv.uictx("local") as localctx:
+        local_btn = kv.AD.Button(key="local_btn",
                                  value="/save_csvpack/local/save_local_panel",
                                  text="save to local csvpack", 
                                  on_click = eh_toggle_localdl
                      )
-        newcfg_ti = oj.AD.TextInput(key="newcfg",
+        newcfg_ti = kv.AD.TextInput(key="newcfg",
                                    text="create new",
                                    placeholder="newpack.cfg")
-        or_sep = oj.PC.Span(text="or")
+        or_sep = kv.PC.Span(text="or")
         
-        existingcfg_ti = oj.AC.TextInput(key="existingcfg",
+        existingcfg_ti = kv.AC.TextInput(key="existingcfg",
                                        text="append to existing",
                                          placeholder = "overwrite existing cfg",
                                          
                                        type="file"
                                        )
 
-        #ojr.CfgLoopRunner
-        async def eh_submitbtn_click(self, msg, to_ms):
+        @kvr.ReactDomino
+        async def eh_submitbtn_click(self, msg, wp, request):
             '''
 
             '''
@@ -107,36 +111,38 @@ with oj.uictx("save_csvpack") as save_csvpack_ctx:
             # return msg.page, rts
             return  [("/save_csv_metadatacfg/local", "newcfg.cfg")]
 
-        submit_btn = oj.AD.Button(key="submit",
+        submit_btn = kv.AD.Button(key="submit",
                                   value="submit",
                                   text="Submit",
                                   on_click = eh_submitbtn_click
                                   )
 
-        save_local_panel  = oj.Mutable.StackV(key="save_local_panel", 
+        save_local_panel  = kv.MD.StackV(key="save_local_panel", 
                               childs=[newcfg_ti,
                                      or_sep,
                                      existingcfg_ti,
                                      submit_btn]
                               )  # move to dc.Stackv.stackv_
 
-    savecfg_deck = oj.Mutable.StackD(key="savecfg_deck",
+    savecfg_deck = StackD(key="savecfg_deck",
                       childs = [save_dl_panel,
                                 save_local_panel
                                 ],
                       )
 
-    panelToggler =oj.Halign(oj.PD.StackH(childs=[local_btn,
+    panelToggler =kv.PD.Halign(kv.PD.StackH(childs=[local_btn,
                                                  dl_btn]
                                          )
                             )
 
-    savecfg_panel = oj.HCCMutable.Subsection(heading_text="Save CSV metadata and config",
-                                             content= oj.HCCMutable.StackV(childs=[panelToggler,
-                                                                                   savecfg_deck
-                                                                                   ]
-                                                                           )
-                                             )
-    title = oj.PD.Title(title_text="Build and save CSV datapack config")
+    savecfg_panel = kv.MD.TitledPara(heading_text="Save CSV metadata and config",
+                                     childs= [kv.HM.StackV(childs=[panelToggler,
+                                                                           savecfg_deck
+                                                                           ]
+                                                                   )
+                                              ],
+                                     key="savecfg_panel"
+                                     )
+    title = kv.PD.Title(title_text="Build and save CSV datapack config")
         
     

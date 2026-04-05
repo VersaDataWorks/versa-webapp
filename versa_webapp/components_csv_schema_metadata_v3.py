@@ -1,13 +1,11 @@
-import ofjustpy as oj
-
+import kavya as kv
 from py_tailwind_utils import *
-
 from addict_tracking_changes import Dict
 import macropy.activate
 from .helpers import build_btn, build_kv_record
 from . import background_sty
 from hyperui_plugin.tables import Simple as SimpleTable
-import ofjustpy_react as ojr
+import kavya_react as kvr
 
 async def on_alt_colname_inp(dbref, msg, to_ms):
     pass
@@ -33,7 +31,7 @@ def build_ui_stats(metadata_report):
     numrecords = build_kv_record("numrecords", "#records",
                                  metadata_report.num_data_lines)
 
-    return oj.PD.StackV(childs=[delimiter,
+    return kv.PD.StackV(childs=[delimiter,
                                  numcols,
                                  numheaderlines,
                                  numrecords
@@ -53,14 +51,14 @@ def build_ui_colnames(metadata_report):
     def cgens():
         for col_pos, col_names in enumerate(metadata_report.header_candidates):
             def items():
-                yield oj.WithBanner(f"Column {col_pos}:",
-                                               oj.AD.Select(key=f"selector_{col_pos}",
+                yield kv.WithBanner(f"Column {col_pos}:",
+                                    kv.AD.Select(key=f"selector_{col_pos}",
                                                             value=col_names[0],
-                                                            childs=[oj.PC.Option(
+                                                            childs=[kv.PC.Option(
                                                                           text=col_names[0],
                                                                           value=col_names[0],
                                                                           selected="selected"),
-                                                             *[oj.PC.Option(
+                                                             *[kv.PC.Option(
                                                                             text=col_name,
                                                                             value=col_name)
                                                                for col_name  in col_names[1:]
@@ -71,10 +69,10 @@ def build_ui_colnames(metadata_report):
                                                             ),
                                     twsty_tags=[space/x/1, bg/gray/100, pd/1, mr/st/1, ai.center]
                                          )
-                yield oj.PD.StackH(childs = [ oj.AD.CheckboxInput(key=f"use_oname_{col_pos}cbox"),
-                                              oj.WithBanner(f"Alt Name: ",
+                yield kv.PD.StackH(childs = [ kv.AD.CheckboxInput(key=f"use_oname_{col_pos}cbox"),
+                                              kv.WithBanner(f"Alt Name: ",
                                                             
-                                                           oj.AD.TextInput(key=f"use_oname_{col_pos}inp",
+                                                            kv.AD.TextInput(key=f"use_oname_{col_pos}inp",
                                                                            value=None,
                                                                            placeholder="alt name",
                                                                            on_change=on_alt_colname_inp,
@@ -86,45 +84,44 @@ def build_ui_colnames(metadata_report):
                                               ],
                                     twsty_tags=[ai.center, space/x/1, bg/gray/100, pd/1, mr/st/1]
                                     )
-                yield oj.PD.StackH(childs =[oj.AD.CheckboxInput(key=f"is_pk_{col_pos}cbox", checked=False),
-                                            oj.PC.Span(text="is primary key",
+                yield kv.PD.StackH(childs =[kv.AD.CheckboxInput(key=f"is_pk_{col_pos}cbox", checked=False),
+                                            kv.PC.Span(text="is primary key",
                                                        twsty_tags=[shadow.inner, boxshadow/gray/"400/50", pd/1])
                                             ],
                                     twsty_tags=[ai.center, space/x/1, bg/gray/100, pd/1, mr/st/1]
                                    )
 
-                yield oj.PD.StackH(childs =[oj.AD.CheckboxInput(key=f"has_hn_{col_pos}cbox", checked=False),
-                                            oj.PC.Span(text="has nulls",
+                yield kv.PD.StackH(childs =[kv.AD.CheckboxInput(key=f"has_hn_{col_pos}cbox", checked=False),
+                                            kv.PC.Span(text="has nulls",
                                                        twsty_tags=[shadow.inner, boxshadow/gray/"400/50", pd/1])
                                             ],
                                     twsty_tags=[ai.center, space/x/1, bg/gray/100, pd/1, mr/st/1]
                                    )                
 
-            yield oj.PD.StackV(childs=[_ for _ in items()], twsty_tags=[space/y/2])
+            yield kv.PD.StackV(childs=[_ for _ in items()], twsty_tags=[space/y/2])
 
-    return oj.PD.StackW(
-                                childs=[_ for _ in cgens()],
-        twsty_tags = [space/x/4, bg/pink/100, bd/pink/100, bd/st/transparent, bd/sb/green/500, pd/1, mr/1]
-                                )
+    return kv.PD.StackW(childs=[_ for _ in cgens()],
+                        twsty_tags = [space/x/4, bg/pink/100, bd/pink/100, bd/st/transparent, bd/sb/green/500, pd/1, mr/1]
+                        )
         
     pass
 
 
 
 def build_ui_gencsvcfg(metadata_report):
-    return oj.WithBanner("Provide a name/label for csv data:",
-                         oj.AC.TextInput(key="model_name_inp",
+    return kv.WithBanner("Provide a name/label for csv data:",
+                         kv.AC.TextInput(key="model_name_inp",
                                          value="dummy_model", 
                                          placeholder="nameme"),
                          twsty_tags=[space/x/1, bg/gray/100, pd/1, mr/st/1, ai.center]
                          )
 
 def build_ui_coltypes(metadata_report):
-    return oj.PD.StackW(childs = [oj.WithBanner(f"Column {col_pos}",
-                                         oj.AD.Select(key=f"selector_{col_pos}",
-                                                      childs = [
-                                                          oj.PC.Option(text=col_type, value=col_type, selected="selected"),
-                                                                    oj.PC.Option(text='string',
+    return kv.PD.StackW(childs = [kv.WithBanner(f"Column {col_pos}",
+                                                kv.AD.Select(key=f"selector_{col_pos}",
+                                                             childs = [
+                                                                 kv.PC.Option(text=col_type, value=col_type, selected="selected"),
+                                                                 kv.PC.Option(text='string',
                                                                                  value='string'
                                                                                  )
                                                                 ],
@@ -142,7 +139,7 @@ def build_ui_coltypes(metadata_report):
                                   ],
                         twsty_tags = [space/x/4, bg/pink/100, bd/pink/100, bd/st/transparent, bd/sb/green/500, pd/1, mr/1]
                         )
-def on_select(dbref, msg, to_ms):
+async def on_select(dbref, msg, wp, request):
     pass
 
 
@@ -173,15 +170,15 @@ def on_select(dbref, msg, to_ms):
 #     return "/gencsvcfg_panel",  ojr.OpaqueDict(res)
             
 def build_components(metadata_report):
-    with oj.TwStyCtx(background_sty):
+    with kv.TwStyCtx(background_sty):
 
-        with oj.uictx("stats"):
-            stats_box = oj.PD.Details(classes="group", extra_classes="[&_summary::-webkit-details-marker]:hidden",
-                          childs = [oj.PD.Summary(classes="flex cursor-pointer items-center justify-between gap-1.5 bg-slate-100 p-4 text-gray-900 rounded-t-lg",
-                                                  childs=[oj.PD.Div(childs=[oj.PC.H2(text="Stats")],
+        with kv.uictx("stats"):
+            stats_box = kv.PD.Details(classes="group", extra_classes="[&_summary::-webkit-details-marker]:hidden",
+                          childs = [kv.PD.Summary(classes="flex cursor-pointer items-center justify-between gap-1.5 bg-slate-100 p-4 text-gray-900 rounded-t-lg",
+                                                  childs=[kv.PD.Div(childs=[kv.PC.H2(text="Stats")],
                                                                     twsty_tags=[flxrsz.one, db.f, jc.center]
                                                                     ),
-                                                          oj.icons.FontAwesomeIcon(label="faPlus",
+                                                          kv.icons.FontAwesomeIcon(label="faPlus",
                                                                                    classes="w-5 h-5"
                                                                                    )
 
@@ -196,14 +193,14 @@ def build_components(metadata_report):
             #                  content = build_ui_stats(metadata_report),
             #                  )
 
-        with oj.uictx("samples"):
+        with kv.uictx("samples"):
 
-            samples_box = oj.PD.Details(classes="group", extra_classes="[&_summary::-webkit-details-marker]:hidden",
-                          childs = [oj.PD.Summary(classes="flex cursor-pointer items-center justify-between gap-1.5 bg-slate-100 p-4 text-gray-900 rounded-t-lg",
-                                                  childs=[oj.PD.Div(childs=[oj.PC.H2(text="Row Samples")],
+            samples_box = kv.PD.Details(classes="group", extra_classes="[&_summary::-webkit-details-marker]:hidden",
+                          childs = [kv.PD.Summary(classes="flex cursor-pointer items-center justify-between gap-1.5 bg-slate-100 p-4 text-gray-900 rounded-t-lg",
+                                                  childs=[kv.PD.Div(childs=[kv.PC.H2(text="Row Samples")],
                                                                     twsty_tags=[flxrsz.one, db.f, jc.center]
                                                                     ),
-                                                          oj.icons.FontAwesomeIcon(label="faPlus",
+                                                          kv.icons.FontAwesomeIcon(label="faPlus",
                                                                                    classes="w-5 h-5"
                                                                                    )
 
@@ -220,18 +217,18 @@ def build_components(metadata_report):
 
             #                                )
         with oj.uictx("coltypes") as coltypesctx:
-            coltypes_box = oj.PD.Subsection(heading_text="Column Types (Inferred)",
+            coltypes_box = kv.PD.Subsection(heading_text="Column Types (Inferred)",
                                content = build_ui_coltypes(metadata_report)
                              )
 
             pass
         with oj.uictx("colnames") as colnamesctx:
-            colnames_box = oj.PD.Subsection(heading_text="Column Names (Inferred)",
+            colnames_box = kv.PD.Subsection(heading_text="Column Names (Inferred)",
                              content=build_ui_colnames(metadata_report)
                              )
             pass
         with oj.uictx("gencsvcfg") as gencsvcfgctx:
-            gencsvcfg_box = oj.PD.Subsection(heading_text="Build CSV config file",
+            gencsvcfg_box = kv.PD.Subsection(heading_text="Build CSV config file",
                              content= build_ui_gencsvcfg(metadata_report)
                              )
             
@@ -239,33 +236,33 @@ def build_components(metadata_report):
 
         # wrap everything within one giant form
         @ojr.CfgLoopRunner
-        async def on_form_submit(dbref, msg, to_ms):
-            appstate = msg.page.session_manager.appstate
+        async def on_form_submit(dbref, msg, wp, request):
+            appstate = wp.session_manager.appstate
             res = Dict()  # collect all the results
-            res.cols_type = [dbref.get_comp_value(msg.page, coltypesctx[f"selector_{idx}"].id)
+            res.cols_type = [dbref.get_comp_value(wp, coltypesctx[f"selector_{idx}"].id)
                              for idx, _ in enumerate(appstate.metadata_report.cols_type)
                          ]
-            res.pks = [dbref.get_comp_value(msg.page, colnamesctx[f"is_pk_{idx}cbox"].id)
+            res.pks = [dbref.get_comp_value(wp, colnamesctx[f"is_pk_{idx}cbox"].id)
                        for idx, _ in enumerate(appstate.metadata_report.cols_type)
                        ]
 
-            res.hasnulls = [dbref.get_comp_value(msg.page, colnamesctx[f"has_hn_{idx}cbox"].id)
+            res.hasnulls = [dbref.get_comp_value(wp, colnamesctx[f"has_hn_{idx}cbox"].id)
                        for idx, _ in enumerate(appstate.metadata_report.cols_type)
                        ]
-            res.cols_name = [dbref.get_comp_value(msg.page, colnamesctx[f"selector_{idx}"].id)
+            res.cols_name = [dbref.get_comp_value(wp, colnamesctx[f"selector_{idx}"].id)
                              for idx, _ in enumerate(appstate.metadata_report.cols_type)
                              ]
             for idx, _ in enumerate(appstate.metadata_report.cols_type):
-                if dbref.get_comp_value(msg.page,
-                                        colnamesctx[f"use_oname_{idx}cbox"].id) and dbref.get_comp_value(msg.page,
+                if dbref.get_comp_value(wp,
+                                        colnamesctx[f"use_oname_{idx}cbox"].id) and dbref.get_comp_value(wp,
                                                                                                          colnamesctx[f"use_oname_{col_pos}inp"]).strip() != "":
-                    res.cols_name[idx] = dbref.get_comp_value(msg.page,
+                    res.cols_name[idx] = dbref.get_comp_value(wp,
                                                               colnamesctx[f"use_oname_{idx}inp"].id)
 
 
     
 
-            res.csv_datamodel_label = dbref.get_comp_value(msg.page,
+            res.csv_datamodel_label = dbref.get_comp_value(wp,
                                                            gencsvcfgctx.model_name_inp.id
                                                            )
             res.freeze()
@@ -275,7 +272,7 @@ def build_components(metadata_report):
 
 
         
-        form_box = oj.AD.Form(key="gencsvcfg_form",
+        form_box = kv.AD.Form(key="gencsvcfg_form",
                    childs =[stats_box,
                             samples_box,
                             coltypes_box,

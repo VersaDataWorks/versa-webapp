@@ -13,21 +13,21 @@ if sys:
 
 from py_tailwind_utils import noop, fz, bg, pink
 from addict import Dict
-import ofjustpy as oj
-import ofjustpy_react as ojr
+import kavya as kv
+import kavya_react as kvr
 import versa_engine as ve
 
 
-def no_action(dbref, msg):
+async def no_action(dbref, msg, wp, request):
     pass
 
 
 
     
 
-@ojr.CfgLoopRunner
-async def on_submit(dbref, msg, to_ms):
-    form_data = msg.page.session_manager.request.state.form_data["/csvinput/form"]
+@kvr.ReactDomino
+async def on_submit(dbref, msg, wp, request):
+    form_data = wp.session_manager.request.state.form_data["/csvinput/form"]
     print (f"check form data : /csvinput/form", form_data)
 
     csvurl = form_data['/csvinput/csvurl']
@@ -54,36 +54,37 @@ async def on_submit(dbref, msg, to_ms):
     # print("in form submit:file ", csvurl, csvcontent)
     # return "/csvinput/panel", (csvurl, csvcontent)
 
-def on_input_change(dbref, msg, to_ms):
+async def on_input_change(dbref, msg, wp, request):
     pass
-with oj.uictx("csvinput") as csvinputctx:
+with kv.uictx("csvinput") as csvinputctx:
     _ictx = csvinputctx
-    _1 = oj.AC.TextInput(key="csvurl",
+    _1 = kv.AC.TextInput(key="csvurl",
                          placeholder="Enter a url hosting raw csv data",
                          value = "http://address.of.csv.file/",
                          type="text",
                          on_change = on_input_change
                     )
-    _2 = oj.AC.TextInput(key="csvfile",
+    _2 = kv.AC.TextInput(key="csvfile",
                          placeholder="Choose an ondisk file",
                          value=None,
                          type="file")
-    _3 = oj.Halign(oj.PC.Span(text="or", twsty_tags=[noop/fz.xl2]))
-    _inp = oj.PC.StackV(childs=[_1, _3, _2]
+    _3 = kv.PD.Halign(kv.PC.Span(text="or", twsty_tags=[noop/fz.xl2]))
+    _inp = kv.PD.StackV(childs=[_1, _3, _2]
                  )
-    _btn = oj.AC.Button(key="submit",
+    _btn = kv.AC.Button(key="submit",
                   text="Analyze CSV file",
                   on_click=on_submit)
 
-    _form = oj.AD.Form(key="form",
+    _form = kv.AD.Form(key="form",
                childs = [_inp, _btn
 
                          ],
                on_submit = on_submit
                )
-    input_panel= oj.PC.Subsection("CSV data input form", oj.PC.StackV(childs = [_form]
+    input_panel= kv.PD.TitledPara("CSV data input form",
+                                  childs = [kv.PD.StackV(childs = [_form]
 
-                                                         )
+                                                         )]
                      )
     
     

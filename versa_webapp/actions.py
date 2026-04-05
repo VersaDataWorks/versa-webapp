@@ -5,7 +5,7 @@ if os:
     logger.setLevel(logging.DEBUG)
 import versa_engine as ve
 from addict import Dict
-import ofjustpy_react as ojr
+import kavya_react as kvr
 import pickle
 from . import  wp_csv_schema_metadata_v3
 from . import wp_save_csvpack_v3

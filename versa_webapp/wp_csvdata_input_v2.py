@@ -3,13 +3,13 @@ the v2 version uses ofjustpy-react, i.e, ui_app_keymap, actions (with context), 
 
 """
 
-import ofjustpy as oj
+import kavya as kv
 from py_tailwind_utils import H, full, bg, green, rose
-import ofjustpy_react as ojr
+import kavya_react as kvr
 
 from .components_csvdata_input_v2 import input_panel 
 from . import actions
-app = oj.load_app()
+app = kv.load_app()
 ui_app_trmap = [
     ("/csvinput/panel", "/csvinput/url_and_content", None)
     ]
@@ -24,20 +24,20 @@ def post_init(wp, session_manager=None):
     pass
 
 # TODO: the_app middleware is not being invoked. 
-endpoint = ojr.create_endpoint("csv_data_input",
+endpoint = kvr.create_endpoint("csv_data_input",
                                   [input_panel
                                    ],
                                ui_app_trmap_iter = ui_app_trmap,
                                action_module = actions,
-                               rendering_type="CSR",
-                               csr_bundle_dir="hyperui",
+                               rendering_type="MutableSSR",
+                               svelte_bundle_dir="ssr",
                                #path_guards = path_guards,
-                               post_init = post_init,
-                               head_html =  """<script src="https://cdn.tailwindcss.com"></script> """,
-                               reactctx = [ojr.Ctx("/wp_redirect", ojr.isstr, ojr.UIOps.REDIRECT)],
+                               post_init_callback = post_init,
+                               #head_html =  """<script src="https://cdn.tailwindcss.com"></script> """,
+                               reactctx = [kvr.Ctx("/wp_redirect", kvr.isstr, kvr.UIOps.REDIRECT)],
 
                                   )
-oj.add_jproute("/", endpoint)
+kv.add_route("/", endpoint)
     
 # def wp_csvdata_input(request):
 #     def panel_builder(session_manager):
